@@ -17,7 +17,7 @@ function clone() {
     echo " "
     echo "===== clone device ====="
     rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv/keys system/qcom
-    git clone --depth 1 -b evox-15 https://github.com/SomeEmptyBox/android_device_motorola_eqe device/motorola/eqe
+    git clone --depth 1 https://github.com/SomeEmptyBox/android_device_motorola_eqe device/motorola/eqe
     git clone --depth 1 https://github.com/moto-sm7550-devs/android_hardware_motorola hardware/motorola
     git clone --depth 1 https://github.com/LineageOS/android_system_qcom system/qcom
     git clone --depth 1 https://github.com/SomeEmptyBox/vendor_evolution-priv_keys vendor/evolution-priv/keys
