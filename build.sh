@@ -6,9 +6,8 @@ function sync() {
     repo init -u https://github.com/Evolution-X/manifest -b vic-qpr1 --git-lfs
     /opt/crave/resync.sh
     echo "===== apply patches ====="
-    rm -rf packages/services/Telephony vendor/qcom/opensource/vibrator
+    rm -rf packages/services/Telephony
     git clone https://github.com/SomeEmptyBox/android_packages_services_Telephony packages/services/Telephony
-    git clone https://github.com/moto-sm7550-devs/android_vendor_qcom_opensource_vibrator vendor/qcom/opensource/vibrator
     echo "===== completed ====="
     echo " "
 }
@@ -16,10 +15,9 @@ function sync() {
 function clone() {
     echo " "
     echo "===== clone device ====="
-    rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv/keys system/qcom
+    rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv/keys
     git clone --depth 1 https://github.com/SomeEmptyBox/android_device_motorola_eqe device/motorola/eqe
-    git clone --depth 1 https://github.com/moto-sm7550-devs/android_hardware_motorola hardware/motorola
-    git clone --depth 1 https://github.com/LineageOS/android_system_qcom system/qcom
+    git clone --depth 1 https://github.com/SomeEmptyBox/android_hardware_motorola hardware/motorola
     git clone --depth 1 https://github.com/SomeEmptyBox/vendor_evolution-priv_keys vendor/evolution-priv/keys
     echo "===== clone vendor ====="
     git clone --depth 1 https://gitlab.com/moto-sm7550/proprietary_vendor_motorola_eqe vendor/motorola/eqe
@@ -56,7 +54,7 @@ function build() {
     export TARGET_INCLUDE_ACCORD=false
     export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
     source build/envsetup.sh
-    lunch lineage_eqe-ap4a-user
+    lunch lineage_eqe-bp1a-user
     make installclean
     m evolution
     echo "===== completed ====="
