@@ -3,11 +3,15 @@
 function sync() {
     echo " "
     echo "===== sync rom ====="
-    repo init -u https://github.com/Evolution-X/manifest -b vic-qpr1 --git-lfs
+    repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs
     /opt/crave/resync.sh
     echo "===== apply patches ====="
-    rm -rf packages/services/Telephony
-    git clone https://github.com/SomeEmptyBox/android_packages_services_Telephony packages/services/Telephony
+    cd packages/services/Telephony
+    curl https://github.com/2by2-Project/packages_services_Telephony/commit/23ef951cffca4f02d7435c934fab94bf4fb7030e.patch | git apply
+    cd -
+    cd vendor/qcom/opensource/vibrator
+    curl https://github.com/moto-sm7550-devs/android_vendor_qcom_opensource_vibrator/commit/15b802a88b5601ed1ae31bab33c83be6f4d01a02.patch | git apply
+    cd -
     echo "===== completed ====="
     echo " "
 }
@@ -16,11 +20,11 @@ function clone() {
     echo " "
     echo "===== clone device ====="
     rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv/keys
-    git clone --depth 1 https://github.com/SomeEmptyBox/android_device_motorola_eqe device/motorola/eqe
-    git clone --depth 1 https://github.com/SomeEmptyBox/android_hardware_motorola hardware/motorola
+    git clone --depth 1 --branch lineage-22.2 https://github.com/SomeEmptyBox/android_device_motorola_eqe device/motorola/eqe
+    git clone --depth 1 --branch lineage-22.2 https://github.com/SomeEmptyBox/android_hardware_motorola hardware/motorola
     git clone --depth 1 https://github.com/SomeEmptyBox/vendor_evolution-priv_keys vendor/evolution-priv/keys
     echo "===== clone vendor ====="
-    git clone --depth 1 https://gitlab.com/moto-sm7550/proprietary_vendor_motorola_eqe vendor/motorola/eqe
+    git clone --depth 1 --branch lineage-22.2 https://gitlab.com/moto-sm7550/proprietary_vendor_motorola_eqe vendor/motorola/eqe
     git clone --depth 1 https://gitlab.com/moto-sm7550/proprietary_vendor_motorola_eqe-motcamera vendor/motorola/eqe-motcamera
     echo "===== clone kernel ====="
     git clone --depth 1 https://github.com/SomeEmptyBox/android_kernel_motorola_sm7550 kernel/motorola/sm7550
