@@ -2,8 +2,9 @@
   "response": [
     {
       "maintainer": "Peace",
+      "currently_maintained": true,
       "oem": "Motorola",
-      "device": "Motorola Edge 50 Pro",
+      "device": "Edge 50 Pro",
       "filename": "EvolutionX-15.0-20250508-eqe-10.6-Unofficial.zip",
       "download": "https://sourceforge.net/projects/eqe/files/EvolutionX/15/20250508/EvolutionX-15.0-20250508-eqe-10.6-Unofficial.zip/download",
       "timestamp": 1746711918,
@@ -12,13 +13,12 @@
       "size": 2786198001,
       "version": "10.6",
       "buildtype": "user",
-      "forum": "",
+      "forum": "https://t.me/SomeEmptyBoxChat",
       "firmware": "",
-      "paypal": "https://linktr.ee/someemptybox",
-      "telegram": "https://t.me/SomeEmptyBox",
+      "paypal": "https://ko-fi.com/someemptybox",
       "github": "https://github.com/SomeEmptyBox",
       "sourceforge": "https://sourceforge.net/projects/eqe/files/EvolutionX/",
-      "initial_installation_images": []
+      "initial_installation_images": [ "recovery", "vendor_boot" ]
     }
   ]
 }
