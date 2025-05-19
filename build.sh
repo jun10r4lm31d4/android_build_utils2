@@ -94,7 +94,7 @@ function root() {
 
     # Some random fixes
     sed -i 's/check_defconfig//' ./build.config.gki
-    sed -i 's/-dirty/-peace/g' ./common/scripts/setlocalversion
+    sed -i 's/-dirty/-peace/g' ./scripts/setlocalversion
     sed -i '2435s/timestamp/*timestamp/g' ./include/uapi/linux/videodev2.h
 
     cd -
