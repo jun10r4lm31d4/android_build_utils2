@@ -4,11 +4,10 @@ function sync() {
     echo " "
     echo "===== sync rom ====="
     repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs
-    /opt/crave/resync.sh
+    curl "https://raw.githubusercontent.com/accupara/docker-images/refs/heads/master/aosp/common/resync.sh" | bash
     echo "===== apply patches ====="
-    rm -rf packages/services/Telephony vendor/qcom/opensource/vibrator
-    git clone --depth 1 --branch lineage-22.2 https://github.com/SomeEmptyBox/android_packages_services_Telephony packages/services/Telephony
-    git clone --depth 1 --branch lineage-22.2 https://github.com/moto-sm7550-devs/android_vendor_qcom_opensource_vibrator vendor/qcom/opensource/vibrator
+    curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/telephony.patch" | patch -p1
+    curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/vibrator.patch" | patch -p1
     echo "===== completed ====="
     echo " "
 }
