@@ -35,8 +35,13 @@ function root() {
     echo "===== integrate KernelSU Next with SUSFS and Wild Kernel patches ====="
     cd kernel/motorola/sm7550
 
-    # KernelSU Next SUSFS
-    curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next-susfs-dev
+    # KernelSU Next
+    curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next
+
+    # SUSFS patches for KnerelSU Next
+    curl -Ls "https://raw.githubusercontent.com/KOWX712/files/main/0001-ksun-susfs157.patch" | patch -p1 --fuzz=3
+    curl -Ls "https://github.com/KernelSU-Next/KernelSU-Next/commit/30707682565083e497485edc4d7764924e2d042f.patch" | patch -p1 --fuzz=3
+    curl -Ls "https://github.com/KernelSU-Next/KernelSU-Next/commit/1ac3a3a112abae73801fd52fe32ea8749407ff8d.patch" | patch -p1 --fuzz=3
 
     # SUSFS patches for Kernel
     git clone -b gki-android13-5.15 https://gitlab.com/simonpunk/susfs4ksu susfs
@@ -54,7 +59,7 @@ function root() {
 
     # Add configuration settings to gki_defconfig
     echo "CONFIG_KSU=y" >> ./arch/arm64/configs/gki_defconfig
-    echo "CONFIG_KSU_WITH_KPROBES=n" >> ./arch/arm64/configs/gki_defconfig
+    echo "CONFIG_KSU_KPROBES_HOOK=n" >> ./arch/arm64/configs/gki_defconfig
 
     # Add tmpfs config setting
     echo "CONFIG_TMPFS_XATTR=y" >> ./arch/arm64/configs/gki_defconfig
