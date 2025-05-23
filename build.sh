@@ -36,7 +36,7 @@ function root() {
     cd kernel/motorola/sm7550
 
     # KernelSU Next
-    curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs-dev
+    curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
 
     # SUSFS patches for Kernel
     git clone -b gki-android13-5.15 https://gitlab.com/simonpunk/susfs4ksu susfs
