@@ -104,8 +104,11 @@ function root() {
 function build() {
     echo " "
     echo "===== start build ====="
-    export BUILD_USERNAME=peace
-    export BUILD_HOSTNAME=crave
+    export BUILD_USERNAME="peace"
+    export BUILD_HOSTNAME="crave"
+    export KBUILD_BUILD_USER="peace"
+    export KBUILD_BUILD_HOST="crave"
+    export TZ="Asia/Kolkata"
     export TARGET_HAS_UDFPS=true
     export TARGET_INCLUDE_ACCORD=false
     export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
