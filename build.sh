@@ -6,8 +6,8 @@ function sync() {
     repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs
     curl "https://raw.githubusercontent.com/accupara/docker-images/refs/heads/master/aosp/common/resync.sh" | bash
     echo "===== apply patches ====="
-    curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/telephony.patch" | patch -p1
-    curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/vibrator.patch" | patch -p1
+    curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/telephony.patch" | patch --strip 1 --forward
+    curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/vibrator.patch" | patch --strip 1 --forward
     echo "===== completed ====="
     echo " "
 }
