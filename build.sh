@@ -14,13 +14,13 @@ if [ -f "/opt/crave/resync.sh" ]; then
     /opt/crave/resync.sh || { echo "Sync failed. Exiting."; exit 1; }
 else
     echo "Local sync script not found. Running remote sync script..."
-    curl "https://raw.githubusercontent.com/accupara/docker-images/refs/heads/master/aosp/common/resync.sh" | bash || { echo "Sync failed. Exiting."; exit 1; }
+    curl -LSs "https://raw.githubusercontent.com/accupara/docker-images/refs/heads/master/aosp/common/resync.sh" | bash || { echo "Sync failed. Exiting."; exit 1; }
 fi
 
 # apply important patches
-if ! grep -q "Reversed (or previously applied) patch detected!" <(curl "${EQE}/telephony.patch" | patch --dry-run --strip 1 2>&1); then
+if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${EQE}/telephony.patch" | patch --dry-run --strip 1 2>&1); then
     # Apply the patch
-    curl "${EQE}/telephony.patch" | patch --strip 1 || {
+    curl -LSs "${EQE}/telephony.patch" | patch --strip 1 || {
         echo "Failed to apply telephony patch. Exiting."
         exit 1
     }
@@ -28,9 +28,9 @@ else
     echo "Patch has already been applied. Skipping."
 fi
 
-if ! grep -q "Reversed (or previously applied) patch detected!" <(curl "${EQE}/vibrator.patch" | patch --dry-run --strip 1 2>&1); then
+if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${EQE}/vibrator.patch" | patch --dry-run --strip 1 2>&1); then
     # Apply the patch
-    curl "${EQE}/vibrator.patch" | patch --strip 1 || {
+    curl -LSs "${EQE}/vibrator.patch" | patch --strip 1 || {
         echo "Failed to apply vibrator patch. Exiting."
         exit 1
     }
@@ -88,14 +88,14 @@ cp ./susfs/kernel_patches/include/linux/* include/linux
 patch -p1 --fuzz=3 <50_add_susfs_in_gki-android13-5.15.patch
 
 # Wild kernel patches
-curl "${WILD_KERNEL}/kernel_patches/refs/heads/main/next/syscall_hooks.patch" | patch -p1 --fuzz=3
-curl "${WILD_KERNEL}/kernel_patches/refs/heads/main/69_hide_stuff.patch" | patch -p1 --fuzz=3
+curl -LSs "${WILD_KERNEL}/kernel_patches/refs/heads/main/next/syscall_hooks.patch" | patch -p1 --fuzz=3
+curl -LSs "${WILD_KERNEL}/kernel_patches/refs/heads/main/69_hide_stuff.patch" | patch -p1 --fuzz=3
 
 # Add configuration settings
-curl -s "${WILD_KERNEL}/GKI_KernelSU_SUSFS/refs/heads/dev/.github/workflows/build.yml" | grep '"CONFIG_' | grep -v 'SUS_SU=y' | awk '{print $2}' | sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
+curl -LSs "${WILD_KERNEL}/GKI_KernelSU_SUSFS/refs/heads/dev/.github/workflows/build.yml" | grep '"CONFIG_' | grep -v 'SUS_SU=y' | awk '{print $2}' | sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
 
 # SUSFS backport patch
-curl "${EQE}/susfs_backport.patch" | patch -p1 --fuzz=3
+curl -LSs "${EQE}/susfs_backport.patch" | patch -p1 --fuzz=3
 
 # Some random fixes
 sed -i 's/check_defconfig//' ./build.config.gki
@@ -129,7 +129,7 @@ make installclean
 m evolution
 
 # upload files to Gofile
-curl "${EQE}/upload.sh" | bash -s out/target/product/eqe/{*.zip,boot.img,init_boot.img,vendor_boot.img,recovery.img,eqe.json}
+curl -LSs "${EQE}/upload.sh" | bash -s out/target/product/eqe/{*.zip,boot.img,init_boot.img,vendor_boot.img,recovery.img,eqe.json}
 
 echo "===== completed ====="
 echo " "
