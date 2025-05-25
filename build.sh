@@ -43,7 +43,9 @@ echo "Sync process completed successfully."
 echo "===================================="
 echo
 
-
+sed -i 's/powershare@1.0/powershare/g' device/motorola/eqe/device.mk
+echo '$(call inherit-product, vendor/motorola/eqe-motcamera/eqe-motcamera-vendor.mk)' >> device/motorola/eqe/device.mk
+echo 'include vendor/motorola/eqe-motcamera/BoardConfigVendor.mk' >> device/motorola/eqe/BoardConfig.mk
 
 echo
 echo "================="
