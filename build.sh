@@ -1,5 +1,8 @@
 #!/bin/bash
 
+WILD_KERNEL="https://raw.githubusercontent.com/WildKernels"
+EQE="https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main"
+
 echo " "
 echo "===== sync rom ====="
 
@@ -15,8 +18,25 @@ else
 fi
 
 # apply important patches
-curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/telephony.patch" | patch --strip 1 --forward || { echo "Failed to apply telephony patch. Exiting."; exit 1; }
-curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/vibrator.patch" | patch --strip 1 --forward || { echo "Failed to apply vibrator patch. Exiting."; exit 1; }
+if ! grep -q "Reversed (or previously applied) patch detected!" <(curl "${EQE}/telephony.patch" | patch --dry-run --strip 1 2>&1); then
+    # Apply the patch
+    curl "${EQE}/telephony.patch" | patch --strip 1 || {
+        echo "Failed to apply telephony patch. Exiting."
+        exit 1
+    }
+else
+    echo "Patch has already been applied. Skipping."
+fi
+
+if ! grep -q "Reversed (or previously applied) patch detected!" <(curl "${EQE}/vibrator.patch" | patch --dry-run --strip 1 2>&1); then
+    # Apply the patch
+    curl "${EQE}/vibrator.patch" | patch --strip 1 || {
+        echo "Failed to apply vibrator patch. Exiting."
+        exit 1
+    }
+else
+    echo "Patch has already been applied. Skipping."
+fi
 
 echo "===== completed ====="
 echo " "
@@ -68,50 +88,14 @@ cp ./susfs/kernel_patches/include/linux/* include/linux
 patch -p1 --fuzz=3 <50_add_susfs_in_gki-android13-5.15.patch
 
 # Wild kernel patches
-curl "https://raw.githubusercontent.com/WildKernels/kernel_patches/refs/heads/main/next/syscall_hooks.patch" | patch -p1 --fuzz=3
-curl "https://raw.githubusercontent.com/WildKernels/kernel_patches/refs/heads/main/69_hide_stuff.patch" | patch -p1 --fuzz=3
+curl "${WILD_KERNEL}/kernel_patches/refs/heads/main/next/syscall_hooks.patch" | patch -p1 --fuzz=3
+curl "${WILD_KERNEL}/kernel_patches/refs/heads/main/69_hide_stuff.patch" | patch -p1 --fuzz=3
+
+# Add configuration settings
+curl -s "${WILD_KERNEL}/GKI_KernelSU_SUSFS/refs/heads/dev/.github/workflows/build.yml" | grep '"CONFIG_' | grep -v 'SUS_SU=y' | awk '{print $2}' | sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
 
 # SUSFS backport patch
-curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/susfs_backport.patch" | patch -p1 --fuzz=3
-
-# Add configuration settings to gki_defconfig
-echo "CONFIG_KSU=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_KPROBES_HOOK=n" >> ./arch/arm64/configs/gki_defconfig
-
-# Add tmpfs config setting
-echo "CONFIG_TMPFS_XATTR=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_TMPFS_POSIX_ACL=y" >> ./arch/arm64/configs/gki_defconfig
-
-# Add additional config setting
-echo "CONFIG_IP_NF_TARGET_TTL=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_IP6_NF_TARGET_HL=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_IP6_NF_MATCH_HL=y" >> ./arch/arm64/configs/gki_defconfig
-
-# Add BBR Config
-echo "CONFIG_TCP_CONG_ADVANCED=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_TCP_CONG_BBR=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_NET_SCH_FQ=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_TCP_CONG_BIC=n" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_TCP_CONG_WESTWOOD=n" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_TCP_CONG_HTCP=n" >> ./arch/arm64/configs/gki_defconfig
-
-# Add SUSFS configuration settings
-echo "CONFIG_KSU_SUSFS=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_SUS_OVERLAYFS=n" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_TRY_UMOUNT=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> ./arch/arm64/configs/gki_defconfig
-echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./arch/arm64/configs/gki_defconfig
+curl "${EQE}/susfs_backport.patch" | patch -p1 --fuzz=3
 
 # Some random fixes
 sed -i 's/check_defconfig//' ./build.config.gki
@@ -145,7 +129,7 @@ make installclean
 m evolution
 
 # upload files to Gofile
-curl "https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/upload.sh" | bash -s out/target/product/eqe/{*.zip,boot.img,init_boot.img,vendor_boot.img,recovery.img,eqe.json}
+curl "${EQE}/upload.sh" | bash -s out/target/product/eqe/{*.zip,boot.img,init_boot.img,vendor_boot.img,recovery.img,eqe.json}
 
 echo "===== completed ====="
 echo " "
