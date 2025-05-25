@@ -1,5 +1,5 @@
 --- /dev/null
-+++ b/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
++++ b/device/motorola/eqe/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8" ?>
 +<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">

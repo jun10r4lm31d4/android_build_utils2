@@ -1,7 +1,5 @@
-diff --git a/device.mk b/device.mk
-index e4b547e..b25b466 100644
---- a/device.mk
-+++ b/device.mk
+--- a/device/motorola/eqe/device.mk
++++ b/device/motorola/eqe/device.mk
 @@ -48,7 +48,8 @@ PRODUCT_PACKAGES += \
      TelephonyResCommon_Sys \
      WifiResCommon_Sys \
@@ -12,11 +10,8 @@ index e4b547e..b25b466 100644
  
  # Add common definitions for Qualcomm
  $(call inherit-product, hardware/qcom-caf/common/common.mk)
-diff --git a/overlay/evo/EvolutionSettingsOverlay/Android.bp b/overlay/evo/EvolutionSettingsOverlay/Android.bp
-new file mode 100644
-index 0000000..d5b8f50
 --- /dev/null
-+++ b/overlay/evo/EvolutionSettingsOverlay/Android.bp
++++ b/device/motorola/eqe/overlay/evo/EvolutionSettingsOverlay/Android.bp
 @@ -0,0 +1,9 @@
 +// SPDX-FileCopyrightText: 2023-2024 The LineageOS Project
 +// SPDX-License-Identifier: Apache-2.0
@@ -27,11 +22,8 @@ index 0000000..d5b8f50
 +    resource_dirs: ["res"],
 +    vendor: true,
 +}
-diff --git a/overlay/evo/EvolutionSettingsOverlay/AndroidManifest.xml b/overlay/evo/EvolutionSettingsOverlay/AndroidManifest.xml
-new file mode 100644
-index 0000000..799db3b
 --- /dev/null
-+++ b/overlay/evo/EvolutionSettingsOverlay/AndroidManifest.xml
++++ b/device/motorola/eqe/overlay/evo/EvolutionSettingsOverlay/AndroidManifest.xml
 @@ -0,0 +1,16 @@
 +<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 +<!--
@@ -49,11 +41,8 @@ index 0000000..799db3b
 +        android:priority="1"
 +    />
 +</manifest>
-diff --git a/overlay/evo/EvolutionSettingsOverlay/res/values/config.xml b/overlay/evo/EvolutionSettingsOverlay/res/values/config.xml
-new file mode 100644
-index 0000000..f6e5dc1
 --- /dev/null
-+++ b/overlay/evo/EvolutionSettingsOverlay/res/values/config.xml
++++ b/device/motorola/eqe/overlay/evo/EvolutionSettingsOverlay/res/values/config.xml
 @@ -0,0 +1,13 @@
 +<?xml version="1.0" encoding="utf-8" ?>
 +<!--
