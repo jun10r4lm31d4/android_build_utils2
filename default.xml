@@ -2,7 +2,6 @@
 <manifest>
 
     <!-- Remotes -->
-    <remote name="peace" fetch="https://github.com/SomeEmptyBox" />
     <remote name="eqe-hub" fetch="https://github.com/moto-sm7550-devs" />
     <remote name="eqe-lab" fetch="https://gitlab.com/moto-sm7550" />
     <remote name="lineage" fetch="https://github.com/LineageOS" />
@@ -13,12 +12,6 @@
         name="android_device_motorola_eqe"
         path="device/motorola/eqe"
         revision="lineage-22.2"
-    />
-    <project
-        remote="peace"
-        name="android_vendor_evolution-priv_keys"
-        path="vendor/evolution-priv/keys"
-        revision="main"
     />
     <project
         remote="lineage"
