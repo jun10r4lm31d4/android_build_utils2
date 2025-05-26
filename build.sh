@@ -214,8 +214,8 @@ lunch lineage_eqe-bp1a-user
 m installclean
 m evolution
 
-echo "Uploading files to Gofile..."
-curl "${peace_eqe_repo}/upload.sh" | bash -s out/target/product/eqe/{*.zip,boot.img,init_boot.img,vendor_boot.img,recovery.img,eqe.json}
+echo "Uploading file..."
+curl bashupload.com -T out/target/product/eqe/EvolutionX-*-Unofficial.zip
 
 echo
 echo "============================="
