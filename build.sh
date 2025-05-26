@@ -21,9 +21,9 @@ local_script_path="/opt/crave/resync.sh"
 remote_script_url="https://raw.githubusercontent.com/accupara/docker-images/refs/heads/master/aosp/common/resync.sh"
 
 # Initialize ROM and Device source
-rm -rf {device,vendor,kernel,hardware}/motorola .repo/local_manifests/*
+rm -rf {device,vendor,kernel,hardware}/motorola .repo/local_manifests
 repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs || handle_error "Repo init failed"
-curl -LSs "${peace_eqe_repo}/default.xml" > .repo/local_manifests/default.xml
+curl -LSs --create-dirs "${peace_eqe_repo}/default.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
 
 # check if local sync script exists. if not, use remote sync script
 if [ -f "${local_script_path}" ]; then
