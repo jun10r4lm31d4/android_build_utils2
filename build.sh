@@ -214,6 +214,8 @@ echo "Starting build process."
 echo "======================="
 echo
 
+set -e
+
 echo "Exporting important variables..."
 export BUILD_USERNAME="peace"
 export BUILD_HOSTNAME="crave"
@@ -231,7 +233,7 @@ make installclean
 m evolution
 
 echo "Uploading files to Gofile..."
-curl -LSs "${peace_eqe_repo}/upload.sh" | bash -s out/target/product/eqe/{*.zip,boot.img,init_boot.img,vendor_boot.img,recovery.img,eqe.json}
+curl "${peace_eqe_repo}/upload.sh" | bash -s out/target/product/eqe/{*.zip,boot.img,init_boot.img,vendor_boot.img,recovery.img,eqe.json}
 
 echo
 echo "============================="
