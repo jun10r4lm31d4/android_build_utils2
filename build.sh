@@ -3,10 +3,6 @@
 # my repo containing patches and scripts
 peace_eqe_repo="https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main"
 
-# crave resync script
-local_script_path="/opt/crave/resync.sh"
-remote_script_url="https://raw.githubusercontent.com/accupara/docker-images/refs/heads/master/aosp/common/resync.sh"
-
 # Function for centralized error handling
 handle_error() {
     local error_message="$1"
@@ -20,7 +16,12 @@ echo "Sync ROM and device sources."
 echo "============================"
 echo
 
-rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv/keys .repo/local_manifests/*
+# crave resync script
+local_script_path="/opt/crave/resync.sh"
+remote_script_url="https://raw.githubusercontent.com/accupara/docker-images/refs/heads/master/aosp/common/resync.sh"
+
+# Initialize ROM and Device source
+rm -rf {device,vendor,kernel,hardware}/motorola .repo/local_manifests/*
 repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs || handle_error "Repo init failed"
 curl -LSs "${peace_eqe_repo}/default.xml" > .repo/local_manifests/default.xml
 
@@ -126,34 +127,22 @@ cp ./${temp_susfs_dir}/kernel_patches/include/linux/* include/linux \
     || handle_error "Failed to copy SUSFS include files"
 echo "SUSFS include files copied successfully."
 
-if ! grep -q "Reversed (or previously applied) patch detected!" <(patch --dry-run --strip 1 < ${patch_file}); then
-    echo "Attempting to apply ${patch_file} patch..."
-    patch --strip 1 < ${patch_file} || handle_error "Failed to apply ${patch_file} patch"
-    echo "${patch_file} patch applied successfully."
-else
-    echo "${patch_file} patch has already been applied. Skipping."
-fi
+kpatches=(
+    "${patch_file}"
+    "${wild_kernel_patches}/next/syscall_hooks.patch"
+    "${wild_kernel_patches}/69_hide_stuff.patch"
+    "${peace_eqe_repo}/susfs_backport.patch"
+)
 
-echo "Cleaning up temporary SUSFS repository '${temp_susfs_dir}'..."
-rm -rf "${temp_susfs_dir}" \
-    || echo "WARNING: Failed to clean up temporary '${temp_susfs_dir}' directory." >&2
-echo "Cleanup complete."
-
-if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${wild_kernel_patches}/next/syscall_hooks.patch" | patch --dry-run --strip 1 --fuzz=3 2>&1); then
-    echo "Attempting to apply syscall_hooks patch..."
-    curl -LSs "${wild_kernel_patches}/next/syscall_hooks.patch" | patch --strip 1 --fuzz=3 || handle_error "Failed to apply syscall_hooks patch"
-    echo "syscall_hooks patch applied successfully."
-else
-    echo "syscall_hooks patch has already been applied. Skipping."
-fi
-
-if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${wild_kernel_patches}/69_hide_stuff.patch" | patch --dry-run --strip 1 --fuzz=3 2>&1); then
-    echo "Attempting to apply hide_stuff patch..."
-    curl -LSs "${wild_kernel_patches}/69_hide_stuff.patch" | patch --strip 1 --fuzz=3 || handle_error "Failed to apply hide_stuff patch"
-    echo "hide_stuff patch applied successfully."
-else
-    echo "hide_stuff patch has already been applied. Skipping."
-fi
+for kpatch in "${kpatches[@]}"; do
+    if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${kpatch}" | patch --dry-run --strip 1 2>&1); then
+        echo "Attempting to apply ${kpatch} patch..."
+        curl -LSs "${kpatch}" | patch --strip 1 || handle_error "Failed to apply ${kpatch} patch"
+        echo "${kpatch} patch applied successfully."
+    else
+        echo "${kpatch} patch has already been applied. Skipping."
+    fi
+done
 
 echo "Adding configuration settings to gki_defconfig..."
 curl -LSs "${wild_kernel_gki}/.github/workflows/build.yml" | \
@@ -161,14 +150,6 @@ curl -LSs "${wild_kernel_gki}/.github/workflows/build.yml" | \
     grep -v 'SUS_SU=y' | \
     awk '{print $2}' | \
     sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
-
-if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${peace_eqe_repo}/susfs_backport.patch" | patch --dry-run --strip 1 2>&1); then
-    echo "Attempting to apply susfs_backport patch..."
-    curl -LSs "${peace_eqe_repo}/susfs_backport.patch" | patch --strip 1 || handle_error "Failed to apply susfs_backport patch"
-    echo "susfs_backport patch applied successfully."
-else
-    echo "susfs_backport patch has already been applied. Skipping."
-fi
 
 echo "Applying miscellaneous fixes..."
 
@@ -230,7 +211,7 @@ export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
 echo "Starting build process..."
 source build/envsetup.sh
 lunch lineage_eqe-bp1a-user
-make installclean
+m installclean
 m evolution
 
 echo "Uploading files to Gofile..."
