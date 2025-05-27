@@ -18,7 +18,7 @@ echo
 
 # crave resync script
 local_script="/opt/crave/resync.sh"
-remote_script="https://raw.githubusercontent.com/accupara/docker-images/refs/heads/master/aosp/common/resync.sh"
+remote_script="${peace_eqe_repo}/scripts/resync.sh"
 
 # Initialize ROM and Device source
 rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv .repo/local_manifests
@@ -45,88 +45,12 @@ echo "Sync process completed successfully."
 echo "===================================="
 echo
 
-
-
-echo
-echo "============================================================="
-echo "Integrating KernelSU Next with SUSFS and Wild Kernel patches."
-echo "============================================================="
-echo
-
-kernel_root="kernel/motorola/sm7550"
-
-ksunext_script="https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next-susfs/kernel/setup.sh"
-ksunext_branch="next-susfs"
-
-susfs_repo="https://gitlab.com/simonpunk/susfs4ksu"
-susfs_branch="gki-android13-5.15"
-
-# wild kernel repo
-wild_kernel="https://raw.githubusercontent.com/WildKernels/GKI_KernelSU_SUSFS/refs/heads/dev"
-
-echo "Navigating to kernel directory: ${kernel_root}"
-cd ${kernel_root}
-
-echo "Setting up KernelSU Next..."
-curl -LSs "${ksunext_script}" | bash -s ${ksunext_branch}
-
-git clone --branch "${susfs_branch}" "${susfs_repo}" susfs \
-    || handle_error "Failed to clone SUSFS repository"
-echo "SUSFS repository cloned successfully."
-
-cp ./susfs/kernel_patches/fs/* fs \
-    || handle_error "Failed to copy SUSFS filesystem patches"
-echo "SUSFS filesystem patches copied successfully."
-
-cp ./susfs/kernel_patches/include/linux/* include/linux \
-    || handle_error "Failed to copy SUSFS include files"
-echo "SUSFS include files copied successfully."
-
-echo "Adding configuration settings to gki_defconfig..."
-curl -LSs "${wild_kernel}/.github/workflows/build.yml" | \
-    grep '"CONFIG_' | \
-    grep -v 'SUS_SU=y' | \
-    awk '{print $2}' | \
-    sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
-
-echo "Applying miscellaneous fixes..."
-
-echo "  - Removing 'check_defconfig' from build.config.gki..."
-if [ ! -f "./build.config.gki" ]; then
-    echo "File not found: build.config.gki."
-fi
-sed -i 's/check_defconfig//' ./build.config.gki \
-    || echo "Failed to apply 'check_defconfig' fix to ./build.config.gki."
-echo "    Fix applied for ./build.config.gki."
-
-echo "  - Changing '-dirty' to '-peace' in ./scripts/setlocalversion..."
-if [ ! -f "./scripts/setlocalversion" ]; then
-    echo "File not found: ./scripts/setlocalversion."
-fi
-sed -i 's/-dirty/-peace/g' ./scripts/setlocalversion \
-    || echo "Failed to apply version fix to ./scripts/setlocalversion."
-echo "    Fix applied for ./scripts/setlocalversion."
-
-echo "  - Modifying timestamp definition in ./include/uapi/linux/videodev2.h..."
-if [ ! -f "./include/uapi/linux/videodev2.h" ]; then
-    echo "File not found: ./include/uapi/linux/videodev2.h."
-fi
-sed -i '2435s/timestamp/*timestamp/g' ./include/uapi/linux/videodev2.h \
-    || echo "Failed to apply timestamp fix to ./include/uapi/linux/videodev2.h."
-echo "    Fix applied for ./include/uapi/linux/videodev2.h."
-
-echo "All miscellaneous fixes applied successfully."
-
-echo "changing back to android root..."
-cd -
-
-echo
-echo "==================================="
-echo "Integration completed successfully."
-echo "==================================="
-echo
-
-
+# Root using KernelSU or KernelSU Next
+# SuSFS patched
+# Requires two arguments
+# 1. ksu_variant: ksu or next
+# 2. ksu_branch: stable or dev
+curl -LSs ${peace_eqe_repo}/scripts/root.sh | bash -s next stable
 
 echo
 echo "================="
@@ -139,10 +63,6 @@ patches=(
     "telephony"
     "vibrator"
     "evolution"
-    "susfs_kernel"
-    "syscall_hooks"
-    "hide_stuff"
-    "susfs_backport"
 )
 
 for patch in "${patches[@]}"; do
@@ -158,6 +78,15 @@ for patch in "${patches[@]}"; do
     fi
     echo
 done
+
+echo "Applying miscellaneous fixes..."
+
+cd kernel/motorola/sm7550
+sed -i 's/-dirty/-peace/g' ./scripts/setlocalversion
+sed -i '2435s/timestamp/*timestamp/g' ./include/uapi/linux/videodev2.h
+cd -
+
+echo "All miscellaneous fixes applied successfully."
 
 echo
 echo "================================="

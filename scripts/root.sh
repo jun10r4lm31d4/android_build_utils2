@@ -1,0 +1,114 @@
+#!/bin/bash
+
+ksu_variant="${1}"
+ksu_branch="${2}"
+
+kernel_root="kernel/motorola/sm7550"
+kernel_patches="https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main/patches"
+
+susfs_repo="https://gitlab.com/simonpunk/susfs4ksu"
+susfs_branch="gki-android13-5.15"
+
+wild_kernel="https://raw.githubusercontent.com/WildKernels/GKI_KernelSU_SUSFS/refs/heads/dev/.github/workflows/build.yml"
+
+# Function for centralized error handling
+handle_error() {
+    local error_message="$1"
+    echo "Error: ${error_message}. Exiting."
+    exit 1
+}
+
+echo
+echo "============================================================="
+echo "Integrating KernelSU Next with SUSFS and Wild Kernel patches."
+echo "============================================================="
+echo
+
+echo "Navigating to kernel directory: ${kernel_root}"
+cd ${kernel_root}
+
+case "${ksu_branch}" in
+    "stable")
+        if [[ "${ksu_variant}" == "ksu" ]]; then
+            ksu_branch="-"
+        elif [[ "${ksu_variant}" == "next" ]]; then
+            ksu_branch="-s next-susfs"
+        fi
+        ;;
+    "dev")
+        if [[ "${ksu_variant}" == "ksu" ]]; then
+            ksu_branch="-s main"
+        elif [[ "${ksu_variant}" == "next" ]]; then
+            ksu_branch="-s next-susfs-dev"
+        fi
+        ;;
+esac
+
+case "${ksu_variant}" in
+    "ksu")
+        echo "Adding KernelSU Official..."
+        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash ${ksu_branch}
+        ;;
+    "next")
+        echo "Adding KernelSU Next..."
+        curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next-susfs/kernel/setup.sh" | bash ${ksu_branch}
+        ;;
+esac
+
+git clone --branch "${susfs_branch}" "${susfs_repo}" susfs
+cp ./susfs/kernel_patches/fs/* fs
+cp ./susfs/kernel_patches/include/linux/* include/linux
+
+if [[ "${ksu_variant}" == "ksu" ]]; then
+    echo "Applying SUSFS patches for Official KernelSU..."
+    cd ./KernelSU
+    curl -LSs ${kernel_patches}/susfs_ksu.patch | patch --strip 1 --forward --fuzz 3
+    cd -
+fi
+
+echo "Adding configuration settings to gki_defconfig..."
+if [ "${ksu_variant}" == "ksu" ]; then
+    curl -LSs "${wild_kernel}" | \
+        grep '"CONFIG_' | \
+        grep -v -E 'SUS_SU=n|HOOK=n' | \
+        awk '{print $2}' | \
+        sed 's/"//g'
+else
+    curl -LSs "${wild_kernel}" | \
+        grep '"CONFIG_' | \
+        grep -v 'SUS_SU=y' | \
+        awk '{print $2}' | \
+        sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
+fi
+
+sed -i 's/check_defconfig//' ./build.config.gki
+
+patches=(
+    "susfs_kernel"
+    "syscall_hook"
+    "hide_stuff"
+    "susfs_backport"
+)
+
+for patch in "${patches[@]}"; do
+    patch_url="${peace_eqe_repo}/patches/${patch}.patch"
+    echo "Processing patch: ${patch} from ${patch_url}"
+
+    if [[ "${ksu_variant}" == "ksu" && ("${patch}" == "susfs_backport" || "${patch}" == "syscall_hook") ]]; then
+        echo "Skipping patch: ${patch} because ksu_variant is set to 'ksu'."
+        continue
+    fi
+
+    echo "Attempting to apply ${patch} patch..."
+    curl -LSs "${patch_url}" | patch --strip 1 --forward --fuzz 3 || handle_error "Failed to apply ${patch} patch"
+    echo "${patch} patch applied successfully."
+done
+
+echo "changing back to android root..."
+cd -
+
+echo
+echo "==================================="
+echo "Integration completed successfully."
+echo "==================================="
+echo
