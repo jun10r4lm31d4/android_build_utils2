@@ -32,10 +32,10 @@ Change-Id: I3bf68273609a33fd551196a2d7c2b02f2916ae76
  src/com/android/phone/PhoneInterfaceManager.java | 8 ++++++--
  1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/src/com/android/phone/PhoneInterfaceManager.java b/src/com/android/phone/PhoneInterfaceManager.java
+diff --git a/packages/services/Telephony/src/com/android/phone/PhoneInterfaceManager.java b/packages/services/Telephony/src/com/android/phone/PhoneInterfaceManager.java
 index bafcc6f76..026c6449b 100644
---- a/src/com/android/phone/PhoneInterfaceManager.java
-+++ b/src/com/android/phone/PhoneInterfaceManager.java
+--- a/packages/services/Telephony/src/com/android/phone/PhoneInterfaceManager.java
++++ b/packages/services/Telephony/src/com/android/phone/PhoneInterfaceManager.java
 @@ -2133,6 +2133,10 @@ public void handleMessage(Message msg) {
                      request = (MainThreadRequest) ar.userObj;
                      IIntegerConsumer callback =

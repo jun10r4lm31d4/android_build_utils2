@@ -10,10 +10,10 @@ Change-Id: Iaca83c1c68a4bcf7c5aaf05fd3b71a286c97f300
  aidl/Vibrator.cpp | 15 ++++++++++-----
  1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/aidl/Vibrator.cpp b/aidl/Vibrator.cpp
+diff --git a/vendor/qcom/opensource/vibrator/aidl/Vibrator.cpp b/vendor/qcom/opensource/vibrator/aidl/Vibrator.cpp
 index b136bad..0584226 100644
---- a/aidl/Vibrator.cpp
-+++ b/aidl/Vibrator.cpp
+--- a/vendor/qcom/opensource/vibrator/aidl/Vibrator.cpp
++++ b/vendor/qcom/opensource/vibrator/aidl/Vibrator.cpp
 @@ -608,13 +608,13 @@ ndk::ScopedAStatus Vibrator::perform(Effect effect, EffectStrength es, const std
      ALOGD("Vibrator perform effect %d", effect);
      if (Offload.mEnabled == 1) {
