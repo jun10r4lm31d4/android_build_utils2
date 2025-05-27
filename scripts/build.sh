@@ -24,7 +24,7 @@ remote_script="https://raw.githubusercontent.com/accupara/docker-images/refs/hea
 rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv .repo/local_manifests
 repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs || handle_error "Repo init failed"
 curl -LSs --create-dirs "${peace_eqe_repo}/manifests/evolution.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
-git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_evolution-priv_keys vendor/evolution-priv/keys
+git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_evolution-priv_keys vendor/evolution-priv/keys || handle_error "cloning keys failed"
 
 # check if local sync script exists. if not, use remote sync script
 if [ -f "${local_script}" ]; then
