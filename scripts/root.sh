@@ -72,7 +72,7 @@ if [ "${ksu_variant}" == "ksu" ]; then
         grep '"CONFIG_' | \
         grep -v -E 'SUS_SU=n|HOOK=n' | \
         awk '{print $2}' | \
-        sed 's/"//g'
+        sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
 else
     curl -LSs "${wild_kernel}" | \
         grep '"CONFIG_' | \
