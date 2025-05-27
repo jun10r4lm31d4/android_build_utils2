@@ -44,45 +44,6 @@ echo "Sync process completed successfully."
 echo "===================================="
 echo
 
-sed -i 's/powershare@1.0/powershare/g' device/motorola/eqe/device.mk
-sed -i '48d' device/motorola/eqe/sepolicy/vendor/file_contexts
-echo '$(call inherit-product, vendor/motorola/eqe-motcamera/eqe-motcamera-vendor.mk)' >> device/motorola/eqe/device.mk
-echo 'include vendor/motorola/eqe-motcamera/BoardConfigVendor.mk' >> device/motorola/eqe/BoardConfig.mk
-
-echo
-echo "================="
-echo "Applying patches."
-echo "================="
-echo
-
-# Apply patches
-patches=(
-    "telephony"
-    "vibrator"
-    "ota_support"
-    "evo_overlay"
-)
-
-for patch in "${patches[@]}"; do
-    patch_url="${peace_eqe_repo}/${patch}.patch"
-    echo "Processing patch: ${patch} from ${patch_url}"
-
-    if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${patch_url}" | patch --dry-run --strip 1 2>&1); then
-        echo "Attempting to apply ${patch} patch..."
-        curl -LSs "${patch_url}" | patch --strip 1 || handle_error "Failed to apply ${patch} patch"
-        echo "${patch} patch applied successfully."
-    else
-        echo "${patch} patch has already been applied. Skipping."
-    fi
-    echo
-done
-
-echo
-echo "================================="
-echo "All patches applied successfully."
-echo "================================="
-echo
-
 
 
 echo
@@ -98,12 +59,9 @@ ksunext_branch="next-susfs"
 
 susfs_repo="https://gitlab.com/simonpunk/susfs4ksu"
 susfs_branch="gki-android13-5.15"
-patch_file="50_add_susfs_in_gki-android13-5.15.patch"
-temp_susfs_dir="susfs"
 
 # wild kernel repo
-wild_kernel_gki="https://raw.githubusercontent.com/WildKernels/GKI_KernelSU_SUSFS/refs/heads/dev"
-wild_kernel_patches="https://raw.githubusercontent.com/WildKernels/kernel_patches/refs/heads/main"
+wild_kernel="https://raw.githubusercontent.com/WildKernels/GKI_KernelSU_SUSFS/refs/heads/dev"
 
 echo "Navigating to kernel directory: ${kernel_root}"
 cd ${kernel_root}
@@ -111,41 +69,20 @@ cd ${kernel_root}
 echo "Setting up KernelSU Next..."
 curl -LSs "${ksunext_script}" | bash -s ${ksunext_branch}
 
-git clone --branch "${susfs_branch}" "${susfs_repo}" ${temp_susfs_dir} \
+git clone --branch "${susfs_branch}" "${susfs_repo}" susfs \
     || handle_error "Failed to clone SUSFS repository"
 echo "SUSFS repository cloned successfully."
 
-cp ./${temp_susfs_dir}/kernel_patches/${patch_file} . \
-    || handle_error "Failed to copy SUSFS patch"
-echo "SUSFS patch copied successfully."
-
-cp ./${temp_susfs_dir}/kernel_patches/fs/* fs \
+cp ./susfs/kernel_patches/fs/* fs \
     || handle_error "Failed to copy SUSFS filesystem patches"
 echo "SUSFS filesystem patches copied successfully."
 
-cp ./${temp_susfs_dir}/kernel_patches/include/linux/* include/linux \
+cp ./susfs/kernel_patches/include/linux/* include/linux \
     || handle_error "Failed to copy SUSFS include files"
 echo "SUSFS include files copied successfully."
 
-kpatches=(
-    "${patch_file}"
-    "${wild_kernel_patches}/next/syscall_hooks.patch"
-    "${wild_kernel_patches}/69_hide_stuff.patch"
-    "${peace_eqe_repo}/susfs_backport.patch"
-)
-
-for kpatch in "${kpatches[@]}"; do
-    if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${kpatch}" | patch --dry-run --strip 1 2>&1); then
-        echo "Attempting to apply ${kpatch} patch..."
-        curl -LSs "${kpatch}" | patch --strip 1 || handle_error "Failed to apply ${kpatch} patch"
-        echo "${kpatch} patch applied successfully."
-    else
-        echo "${kpatch} patch has already been applied. Skipping."
-    fi
-done
-
 echo "Adding configuration settings to gki_defconfig..."
-curl -LSs "${wild_kernel_gki}/.github/workflows/build.yml" | \
+curl -LSs "${wild_kernel}/.github/workflows/build.yml" | \
     grep '"CONFIG_' | \
     grep -v 'SUS_SU=y' | \
     awk '{print $2}' | \
@@ -186,6 +123,46 @@ echo
 echo "==================================="
 echo "Integration completed successfully."
 echo "==================================="
+echo
+
+
+
+echo
+echo "================="
+echo "Applying patches."
+echo "================="
+echo
+
+# Apply patches
+patches=(
+    "telephony"
+    "vibrator"
+    "ota_support"
+    "evo_overlay"
+    "susfs_kernel"
+    "syscall_hooks"
+    "hide_stuff"
+    "susfs_backport"
+)
+
+for patch in "${patches[@]}"; do
+    patch_url="${peace_eqe_repo}/${patch}.patch"
+    echo "Processing patch: ${patch} from ${patch_url}"
+
+    if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${patch_url}" | patch --dry-run --strip 1 2>&1); then
+        echo "Attempting to apply ${patch} patch..."
+        curl -LSs "${patch_url}" | patch --strip 1 || handle_error "Failed to apply ${patch} patch"
+        echo "${patch} patch applied successfully."
+    else
+        echo "${patch} patch has already been applied. Skipping."
+    fi
+    echo
+done
+
+echo
+echo "================================="
+echo "All patches applied successfully."
+echo "================================="
 echo
 
 
