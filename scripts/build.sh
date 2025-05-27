@@ -196,6 +196,7 @@ curl ${peace_eqe_repo}/scripts/upload.sh | bash -s out/target/product/eqe/Evolut
 
 echo "Cleaning up..."
 rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv .repo/local_manifests
+unset GH_TOKEN
 
 echo
 echo "============================="
