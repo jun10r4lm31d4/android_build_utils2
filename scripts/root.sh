@@ -16,7 +16,7 @@ handle_error() {
     local error_message="$1"
     echo "Error: ${error_message}. Exiting."
     exit 1
-}
+} set -o pipefail
 
 echo
 echo "============================================================="

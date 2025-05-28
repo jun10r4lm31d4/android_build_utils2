@@ -8,7 +8,7 @@ handle_error() {
     local error_message="$1"
     echo "Error: ${error_message}. Exiting."
     exit 1
-}
+} set -o pipefail
 
 echo
 echo "============================"
@@ -33,10 +33,7 @@ if [ -f "${local_script}" ]; then
 else
     echo "Local sync script (${local_script}) not found."
     echo "Attempting to download and run remote sync script from: ${remote_script}"
-    (
-        set -o pipefail
-        curl -fLSs "${remote_script}" | bash
-    ) || handle_error "Remote sync script download or execution failed"
+    curl -fLSs "${remote_script}" | bash || handle_error "Remote sync script download or execution failed"
 fi
 
 echo
