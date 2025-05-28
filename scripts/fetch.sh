@@ -3,7 +3,7 @@ fetch() {
     local url="$2"
 
     echo "Fetching ${name} from ${url}..."
-    curl -LSs "${url}" -o "../${name}"
+    curl -fLSs "${url}" -o "../${name}"
 
     if [ $? -eq 0 ]; then
         echo "File saved as ${name}"

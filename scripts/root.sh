@@ -47,11 +47,11 @@ esac
 case "${ksu_variant}" in
     "ksu")
         echo "Adding KernelSU Official..."
-        curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash ${ksu_branch}
+        curl -fLSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash ${ksu_branch}
         ;;
     "next")
         echo "Adding KernelSU Next..."
-        curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next-susfs/kernel/setup.sh" | bash ${ksu_branch}
+        curl -fLSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next-susfs/kernel/setup.sh" | bash ${ksu_branch}
         ;;
 esac
 
@@ -62,19 +62,19 @@ cp ./susfs/kernel_patches/include/linux/* include/linux
 if [[ "${ksu_variant}" == "ksu" ]]; then
     echo "Applying SUSFS patches for Official KernelSU..."
     cd ./KernelSU
-    curl -LSs ${kernel_patches}/susfs_ksu.patch | patch --strip 1 --forward --fuzz 3
+    curl -fLSs ${kernel_patches}/susfs_ksu.patch | patch --strip 1 --forward --fuzz 3
     cd -
 fi
 
 echo "Adding configuration settings to gki_defconfig..."
 if [ "${ksu_variant}" == "ksu" ]; then
-    curl -LSs "${wild_kernel}" | \
+    curl -fLSs "${wild_kernel}" | \
         grep '"CONFIG_' | \
         grep -v -E 'SUS_SU=n|HOOK=n' | \
         awk '{print $2}' | \
         sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
 else
-    curl -LSs "${wild_kernel}" | \
+    curl -fLSs "${wild_kernel}" | \
         grep '"CONFIG_' | \
         grep -v 'SUS_SU=y' | \
         awk '{print $2}' | \
@@ -100,7 +100,7 @@ for patch in "${patches[@]}"; do
     fi
 
     echo "Attempting to apply ${patch} patch..."
-    curl -LSs "${patch_url}" | patch --strip 1 --forward --fuzz 3 || handle_error "Failed to apply ${patch} patch"
+    curl -fLSs "${patch_url}" | patch --strip 1 --forward --fuzz 3 || handle_error "Failed to apply ${patch} patch"
     echo "${patch} patch applied successfully."
 done
 

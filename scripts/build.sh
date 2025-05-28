@@ -23,7 +23,7 @@ remote_script="${peace_eqe_repo}/scripts/resync.sh"
 # Initialize ROM and Device source
 rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv .repo/local_manifests
 repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs || handle_error "Repo init failed"
-curl -LSs --create-dirs "${peace_eqe_repo}/manifests/evolution.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
+curl -fLSs --create-dirs "${peace_eqe_repo}/manifests/evolution.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
 git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_evolution-priv_keys vendor/evolution-priv/keys || handle_error "cloning keys failed"
 
 # check if local sync script exists. if not, use remote sync script
@@ -47,7 +47,7 @@ echo
 # Requires two arguments
 # 1. ksu_variant: ksu or next
 # 2. ksu_branch: stable or dev
-curl -LSs ${peace_eqe_repo}/scripts/root.sh | bash -s next stable
+curl -fLSs ${peace_eqe_repo}/scripts/root.sh | bash -s next stable
 
 echo
 echo "================="
@@ -66,9 +66,9 @@ for patch in "${patches[@]}"; do
     patch_url="${peace_eqe_repo}/patches/${patch}.patch"
     echo "Processing patch: ${patch} from ${patch_url}"
 
-    if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -LSs "${patch_url}" | patch --dry-run --strip 1 --fuzz 3 2>&1); then
+    if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -fLSs "${patch_url}" | patch --dry-run --strip 1 --fuzz 3 2>&1); then
         echo "Attempting to apply ${patch} patch..."
-        curl -LSs "${patch_url}" | patch --strip 1 --fuzz 3 || handle_error "Failed to apply ${patch} patch"
+        curl -fLSs "${patch_url}" | patch --strip 1 --fuzz 3 || handle_error "Failed to apply ${patch} patch"
         echo "${patch} patch applied successfully."
     else
         echo "${patch} patch has already been applied. Skipping."
