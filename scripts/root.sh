@@ -68,19 +68,15 @@ if [[ "${ksu_variant}" == "ksu" ]]; then
 fi
 
 echo "Adding configuration settings to gki_defconfig..."
-if [ "${ksu_variant}" == "ksu" ]; then
-    curl -fLSs "${wild_kernel}" | \
-        grep 'CONFIG_KSU' | \
-        grep -v -E 'SUS_SU=n|KPROBES_HOOK=n' | \
-        awk '{print $2}' | \
-        sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
-else
-    curl -fLSs "${wild_kernel}" | \
-        grep 'CONFIG_KSU' | \
-        grep -v 'SUS_SU=y' | \
-        awk '{print $2}' | \
-        sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
-fi
+curl -fLSs "${wild_kernel}" |
+  grep 'CONFIG_KSU' |
+  if [[ "${ksu_variant}" == "ksu" ]]; then
+    grep -v -E 'SUS_SU=n|KPROBES_HOOK=n'
+  else
+    grep -v 'SUS_SU=y'
+  fi |
+  awk '{print $2}' |
+  sed 's/"//g' >> ./arch/arm64/configs/gki_defconfig
 
 sed -i 's/check_defconfig//' ./build.config.gki
 
