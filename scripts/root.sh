@@ -16,7 +16,9 @@ handle_error() {
     local error_message="$1"
     echo "Error: ${error_message}. Exiting"
     exit 1
-} set -o pipefail
+}
+
+set -o pipefail
 trap 'handle_error "An unexpected error occurred"' ERR
 
 echo

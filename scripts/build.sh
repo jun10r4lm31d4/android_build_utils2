@@ -8,7 +8,7 @@ handle_error() {
     local error_message="$1"
     echo "Error: ${error_message}."
     exit 1
-} set -o pipefail
+}
 
 cleanup() {
     echo "Cleaning up..."
@@ -17,6 +17,7 @@ cleanup() {
     echo "Exiting."
 }
 
+set -o pipefail
 trap 'handle_error "An unexpected error occurred"' ERR
 trap 'cleanup' EXIT
 
