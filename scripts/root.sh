@@ -91,7 +91,7 @@ patches=(
 )
 
 for patch in "${patches[@]}"; do
-    patch_url="${peace_eqe_repo}/patches/${patch}.patch"
+    patch_url="${kernel_patches}/${patch}.patch"
     echo "Processing patch: ${patch} from ${patch_url}"
 
     if [[ "${ksu_variant}" == "ksu" && ("${patch}" == "susfs_backport" || "${patch}" == "syscall_hook") ]]; then
