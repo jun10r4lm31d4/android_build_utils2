@@ -14,9 +14,10 @@ wild_kernel="https://raw.githubusercontent.com/WildKernels/GKI_KernelSU_SUSFS/re
 # Function for centralized error handling
 handle_error() {
     local error_message="$1"
-    echo "Error: ${error_message}. Exiting."
+    echo "Error: ${error_message}. Exiting"
     exit 1
 } set -o pipefail
+trap 'handle_error "An unexpected error occurred"' ERR
 
 echo
 echo "============================================================="

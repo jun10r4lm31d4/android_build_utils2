@@ -6,9 +6,19 @@ peace_eqe_repo="https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/
 # Function for centralized error handling
 handle_error() {
     local error_message="$1"
-    echo "Error: ${error_message}. Exiting."
+    echo "Error: ${error_message}."
     exit 1
 } set -o pipefail
+
+cleanup() {
+    echo "Cleaning up..."
+    rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv .repo/local_manifests
+    unset GH_TOKEN
+    echo "Exiting."
+}
+
+trap 'handle_error "An unexpected error occurred"' ERR
+trap 'cleanup' EXIT
 
 echo
 echo "============================"
@@ -21,7 +31,6 @@ local_script="/opt/crave/resync.sh"
 remote_script="${peace_eqe_repo}/scripts/resync.sh"
 
 # Initialize ROM and Device source
-rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv .repo/local_manifests
 repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs || handle_error "Repo init failed"
 curl -fLSs --create-dirs "${peace_eqe_repo}/manifests/evolution.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
 git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_evolution-priv_keys vendor/evolution-priv/keys || handle_error "cloning keys failed"
@@ -99,8 +108,6 @@ echo "Starting build process."
 echo "======================="
 echo
 
-set -e
-
 echo "Exporting important variables..."
 export BUILD_USERNAME="peace"
 export BUILD_HOSTNAME="crave"
@@ -119,10 +126,6 @@ m evolution
 
 echo "Uploading file..."
 curl ${peace_eqe_repo}/scripts/upload.sh | bash -s out/target/product/eqe/EvolutionX-*-Unofficial.zip
-
-echo "Cleaning up..."
-rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv .repo/local_manifests
-unset GH_TOKEN
 
 echo
 echo "============================="
