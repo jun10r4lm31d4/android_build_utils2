@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<manifest>
+
+    <!-- Remotes -->
+    <remote name="peace" fetch="https://github.com/SomeEmptyBox" />
+    <remote name="eqe-hub" fetch="https://github.com/moto-sm7550-devs" />
+    <remote name="eqe-lab" fetch="https://gitlab.com/moto-sm7550" />
+    <remote name="lineage" fetch="https://github.com/LineageOS" />
+
+    <!-- Device -->
+    <project
+        remote="peace"
+        name="android_device_motorola_eqe"
+        path="device/motorola/eqe"
+        revision="lineage-22.2"
+    />
+    <project
+        remote="lineage"
+        name="android_hardware_motorola"
+        path="hardware/motorola"
+        revision="lineage-22.2"
+    />
+
+    <!-- Vendor -->
+    <project
+        remote="eqe-lab"
+        name="proprietary_vendor_motorola_eqe"
+        path="vendor/motorola/eqe"
+        revision="lineage-22.2"
+    />
+    <project
+        remote="eqe-lab"
+        name="proprietary_vendor_motorola_eqe-motcamera"
+        path="vendor/motorola/eqe-motcamera"
+        revision="master"
+    />
+
+    <!-- Kernel -->
+    <project
+        remote="eqe-hub"
+        name="android_kernel_motorola_sm7550"
+        path="kernel/motorola/sm7550"
+        revision="lineage-22.1"
+    />
+    <project
+        remote="eqe-hub"
+        name="android_kernel_motorola_sm7550-modules"
+        path="kernel/motorola/sm7550-modules"
+        revision="lineage-22.1"
+    />
+    <project
+        remote="eqe-hub"
+        name="android_kernel_motorola_sm7550-devicetrees"
+        path="kernel/motorola/sm7550-devicetrees"
+        revision="lineage-22.1"
+    />
+
+</manifest>
