@@ -84,7 +84,7 @@ sed -i 's/check_defconfig//' ./build.config.gki
 
 patches=(
     "susfs_kernel"
-    "syscall_hook"
+    "syscall_hooks"
     "hide_stuff"
     "susfs_backport"
 )

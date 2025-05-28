@@ -1,5 +1,9 @@
 #!/bin/bash
 
+android="${1}"
+ksu_variant="${2}"
+ksu_branch="${3}"
+
 # my repo containing patches and scripts
 peace_eqe_repo="https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main"
 
@@ -12,7 +16,7 @@ handle_error() {
 
 cleanup() {
     echo "Cleaning up..."
-    rm -rf {device,vendor,kernel,hardware}/motorola vendor/evolution-priv .repo/local_manifests
+    rm -rf {device,vendor,kernel,hardware}/motorola vendor/private .repo/local_manifests
     unset GH_TOKEN
     echo "Exiting."
 }
@@ -32,9 +36,25 @@ local_script="/opt/crave/resync.sh"
 remote_script="${peace_eqe_repo}/scripts/resync.sh"
 
 # Initialize ROM and Device source
-repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs || handle_error "Repo init failed"
-curl -fLSs --create-dirs "${peace_eqe_repo}/manifests/evolution.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
-git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_evolution-priv_keys vendor/evolution-priv/keys || handle_error "cloning keys failed"
+case "${android}" in
+    "lineage")
+        repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs || handle_error "Repo init failed"
+        build_command="m bacon"
+        ;;
+    "evolution")
+        repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs || handle_error "Repo init failed"
+        build_command="m evolution"
+        ;;
+    "rising")
+        repo init -u https://github.com/RisingOS-Revived/android -b qpr2 --git-lfs || handle_error "Repo init failed"
+        build_command="m bacon"
+        ;;
+    *)
+        handle_error "Invalid option: ${android}. Use lineage, evolution, or rising"
+        ;;
+esac
+curl -fLSs --create-dirs "${peace_eqe_repo}/manifests/${android}.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
+git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys || handle_error "cloning keys failed"
 
 # check if local sync script exists. if not, use remote sync script
 if [ -f "${local_script}" ]; then
@@ -57,7 +77,7 @@ echo
 # Requires two arguments
 # 1. ksu_variant: ksu or next
 # 2. ksu_branch: stable or dev
-curl -fLSs ${peace_eqe_repo}/scripts/root.sh | bash -s next stable
+curl -fLSs ${peace_eqe_repo}/scripts/root.sh | bash -s ${ksu_variant} ${ksu_branch}
 
 echo
 echo "================="
@@ -69,7 +89,6 @@ echo
 patches=(
     "telephony"
     "vibrator"
-    "evolution"
 )
 
 for patch in "${patches[@]}"; do
@@ -116,17 +135,16 @@ export KBUILD_BUILD_USER="peace"
 export KBUILD_BUILD_HOST="crave"
 export TZ="Asia/Kolkata"
 export TARGET_HAS_UDFPS=true
-export TARGET_INCLUDE_ACCORD=false
 export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
 
 echo "Starting build process..."
 source build/envsetup.sh
 lunch lineage_eqe-bp1a-user
 m installclean
-m evolution
+${build_command}
 
 echo "Uploading file..."
-curl ${peace_eqe_repo}/scripts/upload.sh | bash -s out/target/product/eqe/EvolutionX-*-Unofficial.zip
+curl ${peace_eqe_repo}/scripts/upload.sh | bash -s out/target/product/eqe/*.zip
 
 echo
 echo "============================="
