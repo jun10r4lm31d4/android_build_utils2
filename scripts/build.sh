@@ -91,6 +91,7 @@ echo
 patches=(
     "telephony"
     "vibrator"
+    "temp"
 )
 
 for patch in "${patches[@]}"; do
