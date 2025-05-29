@@ -66,7 +66,7 @@ if [[ "${ksu_variant}" == "ksu" ]]; then
     echo "Applying SUSFS patches for Official KernelSU..."
     cd ./KernelSU
     curl -fLSs ${kernel_patches}/susfs_ksu.patch | patch --strip 1 --forward --fuzz 3
-    cd -
+    cd ..
 fi
 
 echo "Adding configuration settings to gki_defconfig..."
