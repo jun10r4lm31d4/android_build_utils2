@@ -1,0 +1,27 @@
+diff --git a/device/motorola/eqe/config.fs b/device/motorola/eqe/config.fs
+index ea8c41a..6a897cb 100644
+--- a/device/motorola/eqe/config.fs
++++ b/device/motorola/eqe/config.fs
+@@ -37,6 +37,9 @@ value:2912
+ [AID_VENDOR_THALES_STRONGBOX]
+ value:2913
+ 
++[AID_VENDOR_THALES_WEAVER]
++value:2914
++
+ [AID_VENDOR_BRIDGE_RW]
+ value:5001
+ 
+@@ -67,6 +70,12 @@ user: AID_VENDOR_THALES_STRONGBOX
+ group: AID_SYSTEM
+ caps: SYS_ADMIN SYS_NICE
+ 
++[vendor/bin/hw/android.hardware.weaver@1.0-service-thales]
++mode: 0755
++user: AID_VENDOR_THALES_WEAVER
++group: AID_SYSTEM
++caps: SYS_ADMIN SYS_NICE
++
+ [vendor/bin/hw/android.hardware.security.keymint-service.strongbox]
+ mode: 0755
+ user: AID_VENDOR_NXP_STRONGBOX
