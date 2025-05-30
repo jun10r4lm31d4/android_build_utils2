@@ -93,7 +93,7 @@ for patch in "${patches[@]}"; do
     patch_url="${kernel_patches}/${patch}.patch"
     echo "Processing patch: ${patch} from ${patch_url}"
 
-    if [[ "${ksu_variant}" == "ksu" && ("${patch}" == "susfs_backport" || "${patch}" == "syscall_hook") ]]; then
+    if [[ "${ksu_variant}" == "ksu" && ("${patch}" == "susfs_backport" || "${patch}" == "syscall_hooks") ]]; then
         echo "Skipping patch: ${patch} because ksu_variant is set to 'ksu'."
         continue
     fi
