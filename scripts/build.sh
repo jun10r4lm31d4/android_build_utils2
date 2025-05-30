@@ -1,8 +1,22 @@
 #!/bin/bash
 
+# Check if at least one argument is provided
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $0 <arg1> <arg2> <arg3>"
+    exit 1
+fi
 android="${1}"
-ksu_variant="${2}"
-ksu_branch="${3}"
+
+ksu_variant=""
+if [ "$#" -ge 2 ]; then
+    ksu_variant="${2}"
+fi
+
+ksu_branch="stable"
+if [ "$#" -ge 3 ]; then
+    ksu_branch="${3}"
+fi
+
 build_command="bacon"
 
 # my repo containing patches and scripts
@@ -79,7 +93,9 @@ echo
 # Requires two arguments
 # 1. ksu_variant: ksu or next
 # 2. ksu_branch: stable or dev
-curl -fLSs ${peace_eqe_repo}/scripts/root.sh | bash -s ${ksu_variant} ${ksu_branch}
+if [ "$#" -eq 2 ]; then
+    curl -fLSs ${peace_eqe_repo}/scripts/root.sh | bash -s ${ksu_variant} ${ksu_branch}
+fi
 
 echo
 echo "================="
