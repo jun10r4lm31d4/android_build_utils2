@@ -1,23 +1,23 @@
 #!/bin/bash
 
 # Check if at least one argument is provided
-if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 <arg1> <arg2> <arg3>"
+if [ "$#" -lt 3 ]; then
+    echo "Error: At least 3 arguments are required."
     exit 1
 fi
 android="${1}"
+launch_command="${2}"
+build_command="${3}"
 
 ksu_variant=""
-if [ "$#" -ge 2 ]; then
-    ksu_variant="${2}"
+if [ "$#" -ge 4 ]; then
+    ksu_variant="${4}"
 fi
 
 ksu_branch="stable"
-if [ "$#" -ge 3 ]; then
-    ksu_branch="${3}"
+if [ "$#" -ge 5 ]; then
+    ksu_branch="${5}"
 fi
-
-build_command="bacon"
 
 # my repo containing patches and scripts
 peace_eqe_repo="https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main"
@@ -57,13 +57,15 @@ case "${android}" in
         ;;
     "evolution")
         repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs || handle_error "Repo init failed"
-        build_command="evolution"
         ;;
     "rising")
         repo init -u https://github.com/RisingOS-Revived/android -b qpr2 --git-lfs || handle_error "Repo init failed"
         ;;
     "matrixx")
         repo init -u https://github.com/ProjectMatrixx/android.git -b 15.0 --git-lfs || handle_error "Repo init failed"
+        ;;
+    "pixel")
+        repo init -u https://github.com/PixelOS-AOSP/manifest.git -b fifteen --git-lfs || handle_error "Repo init failed"
         ;;
     *)
         handle_error "Invalid option: ${android}. Use lineage, evolution, or rising"
@@ -93,7 +95,7 @@ echo
 # Requires two arguments
 # 1. ksu_variant: ksu or next
 # 2. ksu_branch: stable or dev
-if [ "$#" -eq 2 ]; then
+if [ "$#" -eq 4 ]; then
     curl -fLSs ${peace_eqe_repo}/scripts/root.sh | bash -s ${ksu_variant} ${ksu_branch}
 fi
 
@@ -159,7 +161,7 @@ export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
 
 echo "Starting build process..."
 source build/envsetup.sh
-lunch lineage_eqe-bp1a-user
+lunch ${launch_command}
 m installclean
 m ${build_command}
 
