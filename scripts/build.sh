@@ -92,6 +92,7 @@ patches=(
     "telephony"
     "vibrator"
     "temp"
+    "quick_settings"
 )
 
 for patch in "${patches[@]}"; do
