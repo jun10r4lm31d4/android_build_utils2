@@ -111,6 +111,7 @@ patches=(
     "vibrator"
     "temp"
     "quick_settings"
+    "expressive"
 )
 
 for patch in "${patches[@]}"; do
