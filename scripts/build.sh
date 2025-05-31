@@ -111,13 +111,12 @@ patches=(
     "vibrator"
     "temp"
     "quick_settings"
-    "expressive"
 )
 
 for patch in "${patches[@]}"; do
     if [[ "${android}" == "pixel" && "${patch}" == "quick_settings" ]]; then
-        echo "Skipping patch: ${patch} because ksu_variant is set to 'ksu'."
-        continue
+        echo "Switching to aosp patch because android is set to 'pixel'."
+        patch="qs_aosp"
     fi
 
     patch_url="${peace_eqe_repo}/patches/${patch}.patch"
