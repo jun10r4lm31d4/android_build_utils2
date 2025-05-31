@@ -16,8 +16,8 @@ Change-Id: I17549a32afd6542abb15e8b6eff32b9133d8ce7f
 
 diff --git a/release/aconfig/bp1a/Android.bp b/release/aconfig/bp1a/Android.bp
 index 15e8822c0..4d70b7c88 100644
---- a/vendor/lineage/release/aconfig/bp1a/Android.bp
-+++ b/vendor/lineage/release/aconfig/bp1a/Android.bp
+--- a/vendor/aosp/release/aconfig/bp1a/Android.bp
++++ b/vendor/aosp/release/aconfig/bp1a/Android.bp
 @@ -17,6 +17,7 @@ aconfig_value_set {
      name: "aconfig_value_set-lineage-bp1a",
      values: [
@@ -30,7 +30,7 @@ diff --git a/release/aconfig/bp1a/com.android.systemui/Android.bp b/release/acon
 new file mode 100644
 index 000000000..6e511a202
 --- /dev/null
-+++ b/vendor/lineage/release/aconfig/bp1a/com.android.systemui/Android.bp
++++ b/vendor/aosp/release/aconfig/bp1a/com.android.systemui/Android.bp
 @@ -0,0 +1,21 @@
 +// Copyright 2025 Google Inc. All rights reserved.
 +//
@@ -57,7 +57,7 @@ diff --git a/release/aconfig/bp1a/com.android.systemui/qs_ui_refactor_compose_fr
 new file mode 100644
 index 000000000..80319a020
 --- /dev/null
-+++ b/vendor/lineage/release/aconfig/bp1a/com.android.systemui/qs_ui_refactor_compose_fragment_flag_values.textproto
++++ b/vendor/aosp/release/aconfig/bp1a/com.android.systemui/qs_ui_refactor_compose_fragment_flag_values.textproto
 @@ -0,0 +1,6 @@
 +flag_value {
 +  package: "com.android.systemui"
@@ -69,7 +69,7 @@ diff --git a/release/aconfig/bp1a/com.android.systemui/qs_ui_refactor_flag_value
 new file mode 100644
 index 000000000..3515f8de8
 --- /dev/null
-+++ b/vendor/lineage/release/aconfig/bp1a/com.android.systemui/qs_ui_refactor_flag_values.textproto
++++ b/vendor/aosp/release/aconfig/bp1a/com.android.systemui/qs_ui_refactor_flag_values.textproto
 @@ -0,0 +1,6 @@
 +flag_value {
 +  package: "com.android.systemui"
