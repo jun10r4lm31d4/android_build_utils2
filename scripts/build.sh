@@ -95,7 +95,7 @@ echo
 # Requires two arguments
 # 1. ksu_variant: ksu or next
 # 2. ksu_branch: stable or dev
-if [ "$#" -eq 4 ]; then
+if [ "$#" -ge 4 ]; then
     curl -fLSs ${peace_eqe_repo}/scripts/root.sh | bash -s ${ksu_variant} ${ksu_branch}
 fi
 
