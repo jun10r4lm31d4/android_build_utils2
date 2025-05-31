@@ -10,8 +10,8 @@ Subject: [PATCH] config: Enable expressive design
 
 diff --git a/config/common.mk b/config/common.mk
 index a558ddf21..aa1b35d00 100644
---- a/vendor/lineage/config/common.mk
-+++ b/vendor/lineage/config/common.mk
+--- a/vendor/aosp/config/common.mk
++++ b/vendor/aosp/config/common.mk
 @@ -372,6 +372,10 @@ PRODUCT_PACKAGES += \
      LMOFreeform \
      LMOFreeformSidebar 
