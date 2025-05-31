@@ -115,6 +115,11 @@ patches=(
 )
 
 for patch in "${patches[@]}"; do
+    if [[ "${android}" == "pixel" && "${patch}" == "quick_settings" ]]; then
+        echo "Skipping patch: ${patch} because ksu_variant is set to 'ksu'."
+        continue
+    fi
+
     patch_url="${peace_eqe_repo}/patches/${patch}.patch"
     echo "Processing patch: ${patch} from ${patch_url}"
 
