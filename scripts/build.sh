@@ -18,7 +18,7 @@ if [ "$#" -ge 3 ]; then
 fi
 
 # my repo containing patches and scripts
-peace_eqe_repo="https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main"
+build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main"
 
 # Function for centralized error handling
 handle_error() {
@@ -46,7 +46,7 @@ echo
 
 # crave resync script
 local_script="/opt/crave/resync.sh"
-remote_script="${peace_eqe_repo}/scripts/resync.sh"
+remote_script="${build_utils}/scripts/resync.sh"
 
 # Initialize ROM and Device source
 case "${android}" in
@@ -69,7 +69,7 @@ case "${android}" in
         handle_error "Invalid option: ${android}. Use lineage, evolution, or rising"
         ;;
 esac
-curl -fLSs --create-dirs "${peace_eqe_repo}/manifests/${android}.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
+curl -fLSs --create-dirs "${build_utils}/manifests/${android}.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
 git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys || handle_error "cloning keys failed"
 
 # check if local sync script exists. if not, use remote sync script
@@ -94,7 +94,7 @@ echo
 # 1. ksu_variant: ksu or next
 # 2. ksu_branch: stable or dev
 if [ "$#" -ge 2 ]; then
-    curl -fLSs ${peace_eqe_repo}/scripts/root.sh | bash -s ${ksu_variant} ${ksu_branch}
+    curl -fLSs ${build_utils}/scripts/root.sh | bash -s ${ksu_variant} ${ksu_branch}
 fi
 
 echo
@@ -111,7 +111,7 @@ patches=(
 )
 
 for patch in "${patches[@]}"; do
-    patch_url="${peace_eqe_repo}/patches/${patch}.patch"
+    patch_url="${build_utils}/patches/${patch}.patch"
     echo "Processing patch: ${patch} from ${patch_url}"
 
     if ! grep -q "Reversed (or previously applied) patch detected!" <(curl -fLSs "${patch_url}" | patch --dry-run --strip 1 --fuzz 3 2>&1); then
@@ -152,7 +152,7 @@ source build/envsetup.sh
 brunch eqe user
 
 echo "Uploading file..."
-curl ${peace_eqe_repo}/scripts/upload.sh | bash -s ${OUT}/{*.zip,recovery.img,vendor_boot.img}
+curl ${build_utils}/scripts/upload.sh | bash -s ${OUT}/{*.zip,recovery.img,vendor_boot.img}
 
 echo
 echo "============================="
