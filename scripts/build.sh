@@ -110,15 +110,9 @@ patches=(
     "telephony"
     "vibrator"
     "misc_kernel"
-    "quick_settings"
 )
 
 for patch in "${patches[@]}"; do
-    if [[ "${android}" == "pixel" && "${patch}" == "quick_settings" ]]; then
-        echo "Switching to aosp patch because android is set to 'pixel'."
-        patch="qs_aosp"
-    fi
-
     patch_url="${peace_eqe_repo}/patches/${patch}.patch"
     echo "Processing patch: ${patch} from ${patch_url}"
 
