@@ -1,20 +1,21 @@
 #!/bin/bash
 
 # Check if at least one argument is provided
-if [ "$#" -lt 1 ]; then
-    echo "Error: At least 1 arguments are required."
+if [ "$#" -lt 2 ]; then
+    echo "Error: At least 2 arguments are required."
     exit 1
 fi
 android="${1}"
+device="${2}"
 
 ksu_variant=""
-if [ "$#" -ge 2 ]; then
-    ksu_variant="${2}"
+if [ "$#" -ge 3 ]; then
+    ksu_variant="${3}"
 fi
 
 ksu_branch="stable"
-if [ "$#" -ge 3 ]; then
-    ksu_branch="${3}"
+if [ "$#" -ge 4 ]; then
+    ksu_branch="${4}"
 fi
 
 # my repo containing patches and scripts
@@ -69,7 +70,7 @@ case "${android}" in
         handle_error "Invalid option: ${android}. Use lineage, evolution, or rising"
         ;;
 esac
-curl -fLSs --create-dirs "${build_utils}/manifests/${android}.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
+curl -fLSs --create-dirs "${build_utils}/manifests/${device}.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
 git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys || handle_error "cloning keys failed"
 
 # check if local sync script exists. if not, use remote sync script
@@ -93,7 +94,7 @@ echo
 # Requires two arguments
 # 1. ksu_variant: ksu or next
 # 2. ksu_branch: stable or dev
-if [ "$#" -ge 2 ]; then
+if [ "$#" -ge 3 ]; then
     curl -fLSs ${build_utils}/scripts/root.sh | bash -s ${ksu_variant} ${ksu_branch}
 fi
 
@@ -105,6 +106,7 @@ echo
 
 # Apply patches
 patches=(
+    "${android}"
     "telephony"
     "vibrator"
     "misc_kernel"
@@ -149,7 +151,7 @@ export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
 
 echo "Starting build process..."
 source build/envsetup.sh
-brunch eqe user
+brunch ${device} user
 
 echo "Uploading file..."
 curl ${build_utils}/scripts/upload.sh | bash -s ${OUT}/{*.zip,recovery.img,vendor_boot.img}
