@@ -18,7 +18,7 @@ if [ "$#" -ge 3 ]; then
 fi
 
 # my repo containing patches and scripts
-build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_eqe/refs/heads/main"
+build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main"
 
 # Function for centralized error handling
 handle_error() {
