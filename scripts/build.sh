@@ -30,6 +30,19 @@ handle_error() {
 
 cleanup() {
     echo "Cleaning up..."
+    for patch in "${patches[@]}"; do
+        patch_url="${build_utils}/patches/${patch}.patch"
+        echo "Processing reverse patch: ${patch} from ${patch_url}"
+
+        if grep -q "Reversed (or previously applied) patch detected!" <(curl -fLSs "${patch_url}" | patch --dry-run --strip 1 --fuzz 3 2>&1); then
+            echo "Attempting to reverse ${patch} patch..."
+            curl -fLSs "${patch_url}" | patch --strip 1 --fuzz 3 --reverse || handle_error "Failed to reverse ${patch} patch"
+            echo "${patch} patch reversed successfully."
+        else
+            echo "${patch} patch has not been applied. Skipping."
+        fi
+        echo
+    done
     rm -rf {device,vendor,kernel,hardware}/motorola vendor/private .repo/local_manifests
     unset GH_TOKEN
     echo "Exiting."
