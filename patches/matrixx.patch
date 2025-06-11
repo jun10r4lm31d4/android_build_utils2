@@ -1,7 +1,5 @@
-diff --git a/lineage_eqe.mk b/lineage_eqe.mk
-index 51a60b3..f5d1073 100644
---- a/lineage_eqe.mk
-+++ b/lineage_eqe.mk
+--- a/device/motorola/eqe/lineage_eqe.mk
++++ b/device/motorola/eqe/lineage_eqe.mk
 @@ -12,9 +12,17 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
  # Inherit from eqe device
  $(call inherit-product, device/motorola/eqe/device.mk)
@@ -20,11 +18,9 @@ index 51a60b3..f5d1073 100644
  PRODUCT_NAME := lineage_eqe
  PRODUCT_DEVICE := eqe
  PRODUCT_MANUFACTURER := motorola
-diff --git a/overlay-lineage/packages/apps/Settings/res/values/strings.xml b/overlay-lineage/packages/apps/Settings/res/values/strings.xml
-new file mode 100644
-index 0000000..db6d1ad
+
 --- /dev/null
-+++ b/overlay-lineage/packages/apps/Settings/res/values/strings.xml
++++ b/device/motorola/eqe/overlay-lineage/packages/apps/Settings/res/values/strings.xml
 @@ -0,0 +1,9 @@
 +<?xml version="1.0" encoding="utf-8" ?>
 +<!--
@@ -35,11 +31,9 @@ index 0000000..db6d1ad
 +    <!-- Android version screen, build maintainer -->
 +    <string name="matrixx_maintainer">Peace</string>
 +</resources>
-diff --git a/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml b/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
-new file mode 100644
-index 0000000..2cda9bb
+
 --- /dev/null
-+++ b/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
++++ b/device/motorola/eqe/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
 @@ -0,0 +1,26 @@
 +<?xml version="1.0" encoding="utf-8" ?>
 +<!--
