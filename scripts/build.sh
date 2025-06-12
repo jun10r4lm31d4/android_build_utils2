@@ -79,6 +79,9 @@ case "${android}" in
     "pixel")
         repo init -u https://github.com/PixelOS-AOSP/manifest.git -b fifteen --git-lfs || handle_error "Repo init failed"
         ;;
+    "infinity")
+        repo init --depth=1 --no-repo-verify --git-lfs -u https://github.com/ProjectInfinity-X/manifest -b 15 -g default,-mips,-darwin,-notdefault || handle_error "Repo init failed"
+        ;;
     *)
         handle_error "Invalid option: ${android}. Use lineage, evolution, or rising"
         ;;
