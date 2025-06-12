@@ -126,6 +126,7 @@ patches=(
     "telephony"
     "vibrator"
     "misc_kernel"
+    "temp"
 )
 
 for patch in "${patches[@]}"; do
