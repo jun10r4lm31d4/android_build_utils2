@@ -30,21 +30,6 @@ index 28cbd6c..32673a7 100644
  else
  BOARD_EROFS_COMPRESSOR := lz4
  BOARD_EROFS_PCLUSTER_SIZE := 262144
-diff --git a/device.mk b/device.mk
-index 904890b..b564763 100644
---- a/device/motorola/eqe/device.mk
-+++ b/device/motorola/eqe/device.mk
-@@ -241,10 +241,6 @@ PRODUCT_COPY_FILES += \
-     frameworks/native/data/etc/android.hardware.keystore.app_attest_key.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.keystore.app_attest_key.xml \
-     frameworks/native/data/etc/android.software.device_id_attestation.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.device_id_attestation.xml
-
--# LiveDisplay
--PRODUCT_PACKAGES += \
--    vendor.lineage.livedisplay@2.1-service.eqe
--
- # Media
- PRODUCT_COPY_FILES += \
-     $(AUDIO_HAL_DIR)/configs/common/codec2/media_codecs_c2_audio.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_c2_audio.xml \
 diff --git a/lineage_eqe.mk b/infinity_eqe.mk
 similarity index 78%
 rename from lineage_eqe.mk
@@ -70,6 +55,387 @@ index 51a60b3..013ec8b 100644
  
  PRODUCT_NAME := lineage_eqe
  PRODUCT_DEVICE := eqe
+diff --git a/livedisplay/Android.bp b/livedisplay/Android.bp
+deleted file mode 100644
+index 1fd3eca..0000000
+--- a/device/motorola/eqe/livedisplay/Android.bp
++++ /dev/null
+@@ -1,38 +0,0 @@
+-//
+-// SPDX-FileCopyrightText: 2019-2024 The LineageOS Project
+-// SPDX-License-Identifier: Apache-2.0
+-//
+-
+-cc_defaults {
+-    name: "livedisplay_eqe",
+-    defaults: ["hidl_defaults"],
+-    relative_install_path: "hw",
+-    srcs: [
+-        ":vendor.lineage.livedisplay@2.0-sdm-pa",
+-        ":vendor.lineage.livedisplay@2.0-sdm-utils",
+-        "AntiFlicker.cpp",
+-        "SunlightEnhancement.cpp",
+-        "service.cpp",
+-    ],
+-    shared_libs: [
+-        "libbase",
+-        "libbinder",
+-        "libcutils",
+-        "libdl",
+-        "libhidlbase",
+-        "libutils",
+-        "vendor.lineage.livedisplay@2.0",
+-        "vendor.lineage.livedisplay@2.1",
+-    ],
+-    header_libs: [
+-        "vendor.lineage.livedisplay@2.0-sdm-headers",
+-    ],
+-}
+-
+-cc_binary {
+-    name: "vendor.lineage.livedisplay@2.1-service.eqe",
+-    init_rc: ["vendor.lineage.livedisplay@2.1-service.eqe.rc"],
+-    vintf_fragments: ["vendor.lineage.livedisplay@2.1-service.eqe.xml"],
+-    defaults: ["livedisplay_eqe"],
+-    vendor: true,
+-}
+diff --git a/livedisplay/AntiFlicker.cpp b/livedisplay/AntiFlicker.cpp
+deleted file mode 100644
+index 0fc5361..0000000
+--- a/device/motorola/eqe/livedisplay/AntiFlicker.cpp
++++ /dev/null
+@@ -1,58 +0,0 @@
+-/*
+- * SPDX-FileCopyrightText: 2019-2024 The LineageOS Project
+- * SPDX-License-Identifier: Apache-2.0
+- */
+-
+-#include "AntiFlicker.h"
+-
+-#include <android-base/file.h>
+-#include <android-base/strings.h>
+-
+-namespace {
+-    constexpr const char *kFileDc = "/sys/devices/platform/soc/soc:qcom,dsi-display-primary/dsi_display_dc";
+-};  // anonymous namespace
+-
+-using ::android::base::ReadFileToString;
+-using ::android::base::Trim;
+-using ::android::base::WriteStringToFile;
+-
+-namespace vendor {
+-namespace lineage {
+-namespace livedisplay {
+-namespace V2_1 {
+-namespace implementation {
+-
+-AntiFlicker::AntiFlicker() {
+-    if (!access(kFileDc, R_OK | W_OK)) {
+-        file_ = kFileDc;
+-        enabled_mode_ = 1;
+-    } else {
+-        file_ = nullptr;
+-    }
+-}
+-
+-bool AntiFlicker::isSupported() {
+-    return file_ != nullptr;
+-}
+-
+-// Methods from ::vendor::lineage::livedisplay::V2_1::IAntiFlicker follow.
+-Return<bool> AntiFlicker::isEnabled() {
+-    std::string tmp;
+-    int32_t contents = 0;
+-
+-    if (ReadFileToString(file_, &tmp)) {
+-        contents = std::stoi(Trim(tmp));
+-    }
+-
+-    return contents > 0;
+-}
+-
+-Return<bool> AntiFlicker::setEnabled(bool enabled) {
+-    return WriteStringToFile(enabled ? std::to_string(enabled_mode_) : "0", file_, true);
+-}
+-
+-}  // namespace implementation
+-}  // namespace V2_1
+-}  // namespace livedisplay
+-}  // namespace lineage
+-}  // namespace vendor
+diff --git a/livedisplay/AntiFlicker.h b/livedisplay/AntiFlicker.h
+deleted file mode 100644
+index 9f97514..0000000
+--- a/device/motorola/eqe/livedisplay/AntiFlicker.h
++++ /dev/null
+@@ -1,36 +0,0 @@
+-/*
+- * SPDX-FileCopyrightText: 2019-2024 The LineageOS Project
+- * SPDX-License-Identifier: Apache-2.0
+- */
+-
+-#pragma once
+-
+-#include <vendor/lineage/livedisplay/2.1/IAntiFlicker.h>
+-
+-namespace vendor {
+-namespace lineage {
+-namespace livedisplay {
+-namespace V2_1 {
+-namespace implementation {
+-
+-using ::android::hardware::Return;
+-
+-class AntiFlicker : public IAntiFlicker {
+-  public:
+-    AntiFlicker();
+-    bool isSupported();
+-
+-    // Methods from ::vendor::lineage::livedisplay::V2_1::IAntiFlicker follow.
+-    Return<bool> isEnabled() override;
+-    Return<bool> setEnabled(bool enabled) override;
+-
+-  private:
+-    const char* file_;
+-    int32_t enabled_mode_;
+-};
+-
+-}  // namespace implementation
+-}  // namespace V2_1
+-}  // namespace livedisplay
+-}  // namespace lineage
+-}  // namespace vendor
+diff --git a/livedisplay/SunlightEnhancement.cpp b/livedisplay/SunlightEnhancement.cpp
+deleted file mode 100644
+index 2f8e851..0000000
+--- a/device/motorola/eqe/livedisplay/SunlightEnhancement.cpp
++++ /dev/null
+@@ -1,58 +0,0 @@
+-/*
+- * SPDX-FileCopyrightText: 2019-2024 The LineageOS Project
+- * SPDX-License-Identifier: Apache-2.0
+- */
+-
+-#include "SunlightEnhancement.h"
+-
+-#include <android-base/file.h>
+-#include <android-base/strings.h>
+-
+-namespace {
+-    constexpr const char *kFileHbm = "/sys/devices/platform/soc/soc:qcom,dsi-display-primary/dsi_display_hbm";
+-};  // anonymous namespace
+-
+-using ::android::base::ReadFileToString;
+-using ::android::base::Trim;
+-using ::android::base::WriteStringToFile;
+-
+-namespace vendor {
+-namespace lineage {
+-namespace livedisplay {
+-namespace V2_1 {
+-namespace implementation {
+-
+-SunlightEnhancement::SunlightEnhancement() {
+-    if (!access(kFileHbm, R_OK | W_OK)) {
+-        file_ = kFileHbm;
+-        enabled_mode_ = 1;
+-    } else {
+-        file_ = nullptr;
+-    }
+-}
+-
+-bool SunlightEnhancement::isSupported() {
+-    return file_ != nullptr;
+-}
+-
+-// Methods from ::vendor::lineage::livedisplay::V2_1::ISunlightEnhancement follow.
+-Return<bool> SunlightEnhancement::isEnabled() {
+-    std::string tmp;
+-    int32_t contents = 0;
+-
+-    if (ReadFileToString(file_, &tmp)) {
+-        contents = std::stoi(Trim(tmp));
+-    }
+-
+-    return contents > 0;
+-}
+-
+-Return<bool> SunlightEnhancement::setEnabled(bool enabled) {
+-    return WriteStringToFile(enabled ? std::to_string(enabled_mode_) : "0", file_, true);
+-}
+-
+-}  // namespace implementation
+-}  // namespace V2_1
+-}  // namespace livedisplay
+-}  // namespace lineage
+-}  // namespace vendor
+diff --git a/livedisplay/SunlightEnhancement.h b/livedisplay/SunlightEnhancement.h
+deleted file mode 100644
+index 4248fad..0000000
+--- a/device/motorola/eqe/livedisplay/SunlightEnhancement.h
++++ /dev/null
+@@ -1,36 +0,0 @@
+-/*
+- * SPDX-FileCopyrightText: 2019-2024 The LineageOS Project
+- * SPDX-License-Identifier: Apache-2.0
+- */
+-
+-#pragma once
+-
+-#include <vendor/lineage/livedisplay/2.1/ISunlightEnhancement.h>
+-
+-namespace vendor {
+-namespace lineage {
+-namespace livedisplay {
+-namespace V2_1 {
+-namespace implementation {
+-
+-using ::android::hardware::Return;
+-
+-class SunlightEnhancement : public ISunlightEnhancement {
+-  public:
+-    SunlightEnhancement();
+-    bool isSupported();
+-
+-    // Methods from ::vendor::lineage::livedisplay::V2_1::ISunlightEnhancement follow.
+-    Return<bool> isEnabled() override;
+-    Return<bool> setEnabled(bool enabled) override;
+-
+-  private:
+-    const char* file_;
+-    int32_t enabled_mode_;
+-};
+-
+-}  // namespace implementation
+-}  // namespace V2_1
+-}  // namespace livedisplay
+-}  // namespace lineage
+-}  // namespace vendor
+diff --git a/livedisplay/service.cpp b/livedisplay/service.cpp
+deleted file mode 100644
+index 1e2c9cf..0000000
+--- a/device/motorola/eqe/livedisplay/service.cpp
++++ /dev/null
+@@ -1,80 +0,0 @@
+-/*
+- * SPDX-FileCopyrightText: 2019-2024 The LineageOS Project
+- * SPDX-License-Identifier: Apache-2.0
+- */
+-
+-#define LOG_TAG "vendor.lineage.livedisplay@2.1-service.eqe"
+-
+-#include <android-base/logging.h>
+-#include <binder/ProcessState.h>
+-#include <hidl/HidlTransportSupport.h>
+-#include <livedisplay/sdm/PictureAdjustment.h>
+-#include <vendor/lineage/livedisplay/2.1/IPictureAdjustment.h>
+-#include "AntiFlicker.h"
+-#include "SunlightEnhancement.h"
+-
+-using ::android::OK;
+-using ::android::sp;
+-using ::android::status_t;
+-using ::android::hardware::configureRpcThreadpool;
+-using ::android::hardware::joinRpcThreadpool;
+-
+-using ::vendor::lineage::livedisplay::V2_0::sdm::PictureAdjustment;
+-using ::vendor::lineage::livedisplay::V2_0::sdm::SDMController;
+-using ::vendor::lineage::livedisplay::V2_1::IPictureAdjustment;
+-using ::vendor::lineage::livedisplay::V2_1::implementation::AntiFlicker;
+-using ::vendor::lineage::livedisplay::V2_1::implementation::SunlightEnhancement;
+-
+-status_t RegisterAsServices() {
+-    status_t status = OK;
+-
+-    sp<SunlightEnhancement> se = new SunlightEnhancement();
+-    if (se->isSupported()) {
+-        status = se->registerAsService();
+-        if (status != OK) {
+-            LOG(ERROR) << "Could not register service for LiveDisplay HAL SunlightEnhancement Iface"
+-                       << " (" << status << ")";
+-            return status;
+-        }
+-    }
+-
+-	sp<AntiFlicker> af = new AntiFlicker();
+-    if (af->isSupported()) {
+-        status = af->registerAsService();
+-        if (status != OK) {
+-            LOG(ERROR) << "Could not register service for LiveDisplay HAL AntiFlicker Iface"
+-                       << " (" << status << ")";
+-            return status;
+-        }
+-    }
+-
+-    std::shared_ptr<SDMController> controller = std::make_shared<SDMController>();
+-    sp<PictureAdjustment> pa = new PictureAdjustment(controller);
+-	status = pa->registerAsService();
+-    if (status != OK) {
+-        LOG(ERROR) << "Could not register service for LiveDisplay HAL PictureAdjustment Iface ("
+-                   << status << ")";
+-        return status;
+-    }
+-
+-    return OK;
+-}
+-
+-int main() {
+-	android::ProcessState::initWithDriver("/dev/vndbinder");
+-
+-    LOG(DEBUG) << "LiveDisplay HAL service is starting.";
+-
+-    configureRpcThreadpool(1, true /*callerWillJoin*/);
+-
+-    if (RegisterAsServices() == OK) {
+-        LOG(DEBUG) << "LiveDisplay HAL service is ready.";
+-        joinRpcThreadpool();
+-    } else {
+-        LOG(ERROR) << "Could not register service for LiveDisplay HAL";
+-    }
+-
+-    // In normal operation, we don't expect the thread pool to shutdown
+-    LOG(ERROR) << "LiveDisplay HAL service is shutting down.";
+-    return 1;
+-}
+diff --git a/livedisplay/vendor.lineage.livedisplay@2.1-service.eqe.rc b/livedisplay/vendor.lineage.livedisplay@2.1-service.eqe.rc
+deleted file mode 100644
+index f258c30..0000000
+--- a/device/motorola/eqe/livedisplay/vendor.lineage.livedisplay@2.1-service.eqe.rc
++++ /dev/null
+@@ -1,11 +0,0 @@
+-on init
+-    # LiveDisplay sysfs
+-    chown system system /sys/devices/platform/soc/soc:qcom,dsi-display-primary/dsi_display_hbm
+-    chmod 0660 /sys/devices/platform/soc/soc:qcom,dsi-display-primary/dsi_display_hbm
+-    chown system system /sys/devices/platform/soc/soc:qcom,dsi-display-primary/dsi_display_dc
+-    chmod 0660 /sys/devices/platform/soc/soc:qcom,dsi-display-primary/dsi_display_dc
+-
+-service vendor.livedisplay-hal-2-1 /vendor/bin/hw/vendor.lineage.livedisplay@2.1-service.eqe
+-    class late_start
+-    user system
+-    group system
+diff --git a/livedisplay/vendor.lineage.livedisplay@2.1-service.eqe.xml b/livedisplay/vendor.lineage.livedisplay@2.1-service.eqe.xml
+deleted file mode 100644
+index 2cf6563..0000000
+--- a/device/motorola/eqe/livedisplay/vendor.lineage.livedisplay@2.1-service.eqe.xml
++++ /dev/null
+@@ -1,16 +0,0 @@
+-<manifest version="2.0" type="device">
+-	<hal format="hidl">
+-        <name>vendor.lineage.livedisplay</name>
+-        <transport>hwbinder</transport>
+-        <version>2.1</version>
+-        <interface>
+-            <name>ISunlightEnhancement</name>
+-            <instance>default</instance>
+-        </interface>
+-        <interface>
+-            <name>IAntiFlicker</name>
+-            <instance>default</instance>
+-        </interface>
+-        <fqname>@2.0::IPictureAdjustment/default</fqname>
+-	</hal>
+-</manifest>
 diff --git a/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml b/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
 new file mode 100644
 index 0000000..70d366b
