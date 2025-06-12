@@ -1,0 +1,89 @@
+diff --git a/AndroidProducts.mk b/AndroidProducts.mk
+index da4585f..546d6f8 100644
+--- a/device/motorola/eqe/AndroidProducts.mk
++++ b/device/motorola/eqe/AndroidProducts.mk
+@@ -5,4 +5,4 @@
+ #
+ 
+ PRODUCT_MAKEFILES := \
+-    $(LOCAL_DIR)/lineage_eqe.mk
++    $(LOCAL_DIR)/infinity_eqe.mk
+diff --git a/BoardConfig.mk b/BoardConfig.mk
+index 28cbd6c..32673a7 100644
+--- a/device/motorola/eqe/BoardConfig.mk
++++ b/device/motorola/eqe/BoardConfig.mk
+@@ -176,7 +176,7 @@ DEVICE_FRAMEWORK_MANIFEST_FILE += $(DEVICE_PATH)/framework_manifest.xml
+ DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := \
+     $(DEVICE_PATH)/device_framework_matrix.xml \
+     hardware/qcom-caf/common/vendor_framework_compatibility_matrix.xml \
+-    vendor/lineage/config/device_framework_matrix.xml
++    vendor/infinity/config/device_framework_matrix.xml
+ DEVICE_MATRIX_FILE := hardware/qcom-caf/common/compatibility_matrix.xml
+ DEVICE_MANIFEST_SKUS := crow
+ DEVICE_MANIFEST_CROW_FILES += \
+@@ -194,7 +194,7 @@ BOARD_USES_METADATA_PARTITION := true
+ # Partitions
+ TARGET_RO_FILE_SYSTEM_TYPE ?= ext4
+ ifneq ($(TARGET_RO_FILE_SYSTEM_TYPE),erofs)
+--include vendor/lineage/config/BoardConfigReservedSize.mk
++-include vendor/infinity/config/BoardConfigReservedSize.mk
+ else
+ BOARD_EROFS_COMPRESSOR := lz4
+ BOARD_EROFS_PCLUSTER_SIZE := 262144
+diff --git a/lineage_eqe.mk b/infinity_eqe.mk
+similarity index 78%
+rename from lineage_eqe.mk
+rename to infinity_eqe.mk
+index 51a60b3..013ec8b 100644
+--- a/device/motorola/eqe/lineage_eqe.mk
++++ b/device/motorola/eqe/infinity_eqe.mk
+@@ -12,8 +12,16 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
+ # Inherit from eqe device
+ $(call inherit-product, device/motorola/eqe/device.mk)
+ 
++INFINITY_MAINTAINER := "Peace"
++TARGET_SUPPORTS_BLUR := true
++WITH_GAPPS := true
++TARGET_SHIPS_FULL_GAPPS := true
++
+ # Inherit some common Lineage stuff.
+-$(call inherit-product, vendor/lineage/config/common_full_phone.mk)
++$(call inherit-product, vendor/infinity/config/common_full_phone.mk)
++
++# Include signing keys
++include vendor/private/keys/keys.mk
+ 
+ PRODUCT_NAME := lineage_eqe
+ PRODUCT_DEVICE := eqe
+diff --git a/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml b/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
+new file mode 100644
+index 0000000..70d366b
+--- /dev/null
++++ b/device/motorola/eqe/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="utf-8" ?>
++<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
++    <string
++        name="updater_server_url"
++        translatable="false"
++    >https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/ota/eqe/infinity.json</string>
++    <string
++        name="menu_changelog_url"
++        translatable="false"
++    >https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/ota/eqe/infinity.txt</string>
++</resources>
+diff --git a/system.prop b/system.prop
+index b968252..e19d63c 100644
+--- a/device/motorola/eqe/system.prop
++++ b/device/motorola/eqe/system.prop
+@@ -85,3 +85,10 @@ persist.sys.wfd.virtual=0
+ 
+ #Disable MTE Async for system server
+ arm64.memtag.process.system_server=off
++
++# InfinityX
++ro.product.marketname=Motorola Edge 50 Pro
++ro.infinity.soc=Snapdragon 7 Gen 3
++ro.infinity.battery=4500 mAh
++ro.infinity.display=1220 x 2712, 144 Hz
++ro.infinity.camera=Front 50MP / Rear 50MP + 10MP + 13MP
