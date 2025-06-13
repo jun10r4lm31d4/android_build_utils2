@@ -63,27 +63,30 @@ remote_script="${build_utils}/scripts/resync.sh"
 # Initialize ROM and Device source
 case "${android}" in
     "lineage")
-        repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs || handle_error "Repo init failed"
+        repo_url="https://github.com/LineageOS/android.git"
+        repo_branch="lineage-22.2"
         ;;
     "evolution")
-        repo init -u https://github.com/Evolution-X/manifest -b vic --git-lfs || handle_error "Repo init failed"
+        repo_url="https://github.com/Evolution-X/manifest.git"
+        repo_branch="vic"
         ;;
     "rising")
-        repo init -u https://github.com/RisingOS-Revived/android -b qpr2 --git-lfs || handle_error "Repo init failed"
+        repo_url="https://github.com/RisingOS-Revived/android.git"
+        repo_branch="qpr2"
         ;;
     "matrixx")
-        repo init -u https://github.com/ProjectMatrixx/android.git -b 15.0 --git-lfs || handle_error "Repo init failed"
+        repo_url="https://github.com/ProjectMatrixx/android.git"
+        repo_branch="15.0"
         ;;
     "pixel")
-        repo init -u https://github.com/PixelOS-AOSP/manifest.git -b fifteen --git-lfs || handle_error "Repo init failed"
-        ;;
-    "infinity")
-        repo init --depth=1 --no-repo-verify --git-lfs -u https://github.com/ProjectInfinity-X/manifest -b 15 -g default,-mips,-darwin,-notdefault || handle_error "Repo init failed"
+        repo_url="https://github.com/PixelOS-AOSP/manifest.git"
+        repo_branch="fifteen"
         ;;
     *)
         handle_error "Invalid option: ${android}. Use lineage, evolution, or rising"
         ;;
 esac
+repo init --depth 1 --git-lfs --manifest-url ${repo_url} --manifest-branch ${repo_branch} || handle_error "Repo init failed"
 curl -fLSs --create-dirs "${build_utils}/manifests/${device}.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
 git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys || handle_error "cloning keys failed"
 
