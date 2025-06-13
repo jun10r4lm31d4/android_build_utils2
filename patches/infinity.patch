@@ -436,7 +436,7 @@ index 2cf6563..0000000
 -        <fqname>@2.0::IPictureAdjustment/default</fqname>
 -	</hal>
 -</manifest>
-diff --git a/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml b/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
+diff --git a/device/motorola/eqe/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml b/device/motorola/eqe/overlay-lineage/packages/apps/Updater/app/src/main/res/values/strings.xml
 new file mode 100644
 index 0000000..70d366b
 --- /dev/null
