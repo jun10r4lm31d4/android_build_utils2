@@ -53,9 +53,7 @@ trap 'handle_error "An unexpected error occurred"' ERR
 trap 'cleanup' EXIT
 
 echo
-echo "============================"
-echo "Sync ROM and device sources."
-echo "============================"
+echo "==================== Sync ROM and device sources ===================="
 echo
 
 # crave resync script
@@ -100,9 +98,7 @@ else
 fi
 
 echo
-echo "===================================="
-echo "Sync process completed successfully."
-echo "===================================="
+echo "==================== Sync process completed successfully ===================="
 echo
 
 # Root using KernelSU or KernelSU Next
@@ -115,9 +111,7 @@ if [ "$#" -ge 3 ]; then
 fi
 
 echo
-echo "================="
-echo "Applying patches."
-echo "================="
+echo "==================== Applying patches ===================="
 echo
 
 # Apply patches
@@ -144,17 +138,7 @@ for patch in "${patches[@]}"; do
 done
 
 echo
-echo "================================="
-echo "All patches applied successfully."
-echo "================================="
-echo
-
-
-
-echo
-echo "======================="
-echo "Starting build process."
-echo "======================="
+echo "==================== All patches applied successfully ===================="
 echo
 
 echo "Exporting important variables..."
@@ -172,9 +156,3 @@ brunch ${device} user
 
 echo "Uploading file..."
 curl ${build_utils}/scripts/upload.sh | bash -s ${OUT}/{*.zip,recovery.img,vendor_boot.img}
-
-echo
-echo "============================="
-echo "Build completed successfully."
-echo "============================="
-echo

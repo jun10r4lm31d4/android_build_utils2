@@ -22,9 +22,7 @@ set -o pipefail
 trap 'handle_error "An unexpected error occurred"' ERR
 
 echo
-echo "============================================================="
-echo "Integrating KernelSU Next with SUSFS and Wild Kernel patches."
-echo "============================================================="
+echo "==================== Integrating KernelSU with SUSFS ===================="
 echo
 
 echo "Navigating to kernel directory: ${kernel_root}"
@@ -107,7 +105,5 @@ echo "changing back to android root..."
 cd -
 
 echo
-echo "==================================="
-echo "Integration completed successfully."
-echo "==================================="
+echo "==================== Integration completed successfully ===================="
 echo
