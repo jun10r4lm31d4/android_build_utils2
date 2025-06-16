@@ -30,17 +30,13 @@ cd ${kernel_root}
 
 case "${ksu_branch}" in
     "stable")
-        if [[ "${ksu_variant}" == "ksu" ]]; then
-            ksu_branch="-"
-        elif [[ "${ksu_variant}" == "next" ]]; then
-            ksu_branch="-s next-susfs"
-        fi
+        ksu_branch="-"
         ;;
     "dev")
         if [[ "${ksu_variant}" == "ksu" ]]; then
             ksu_branch="-s main"
         elif [[ "${ksu_variant}" == "next" ]]; then
-            ksu_branch="-s next-susfs-dev"
+            ksu_branch="-s next"
         fi
         ;;
 esac
@@ -52,7 +48,7 @@ case "${ksu_variant}" in
         ;;
     "next")
         echo "Adding KernelSU Next..."
-        curl -fLSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next-susfs/kernel/setup.sh" | bash ${ksu_branch}
+        curl -fLSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash ${ksu_branch}
         ;;
 esac
 
@@ -64,6 +60,11 @@ if [[ "${ksu_variant}" == "ksu" ]]; then
     echo "Applying SUSFS patches for Official KernelSU..."
     cd ./KernelSU
     curl -fLSs ${kernel_patches}/susfs_ksu.patch | patch --strip 1 --forward --fuzz 3
+    cd ..
+elif [[ "${ksu_variant}" == "next" ]]; then
+    echo "Applying SUSFS patches for KernelSU Next..."
+    cd ./KernelSU-Next
+    curl -fLSs ${kernel_patches}/susfs_ksun.patch | patch --strip 1 --forward --fuzz 3
     cd ..
 fi
 
