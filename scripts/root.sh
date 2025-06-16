@@ -4,7 +4,7 @@ ksu_variant="${1}"
 ksu_branch="${2}"
 
 kernel_root="kernel/motorola/sm7550"
-kernel_patches="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/patches"
+kernel_patches="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/patches/kernel"
 
 susfs_repo="https://gitlab.com/simonpunk/susfs4ksu"
 susfs_branch="gki-android13-5.15"
