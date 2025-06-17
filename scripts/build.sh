@@ -119,7 +119,6 @@ echo
 
 # Apply patches
 patches=(
-    "${android}"
     "telephony"
     "vibrator"
     "misc_kernel"
