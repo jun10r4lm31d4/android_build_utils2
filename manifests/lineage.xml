@@ -2,13 +2,14 @@
 <manifest>
 
     <!-- Remotes -->
+    <remote name="eqe-peace" fetch="https://github.com/SomeEmptyBox" />
     <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
     <remote name="eqe-gitlab" fetch="https://gitlab.com/moto-sm7550" />
     <remote name="eqe-lineage" fetch="https://github.com/LineageOS" />
 
     <!-- Device -->
     <project
-        remote="eqe-github"
+        remote="eqe-peace"
         name="android_device_motorola_eqe"
         path="device/motorola/eqe"
         revision="lineage-22.2"
