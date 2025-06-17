@@ -87,7 +87,7 @@ case "${android}" in
         ;;
 esac
 repo init --depth 1 --git-lfs --manifest-url ${repo_url} --manifest-branch ${repo_branch} || handle_error "Repo init failed"
-curl -fLSs --create-dirs "${build_utils}/manifests/${device}.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
+curl -fLSs --create-dirs "${build_utils}/manifests/${android}.xml" -o .repo/local_manifests/default.xml || handle_error "Local manifest init failed"
 git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys || handle_error "cloning keys failed"
 
 # check if local sync script exists. if not, use remote sync script
