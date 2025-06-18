@@ -1,4 +1,4 @@
-diff --git a/device.mk b/device.mk
+diff --git a/device/motorola/eqe/device.mk b/device/motorola/eqe/device.mk
 index 904890b..158b04b 100644
 --- a/device/motorola/eqe/device.mk
 +++ b/device/motorola/eqe/device.mk
@@ -15,3 +15,13 @@ index 904890b..158b04b 100644
  # Protobuf
  PRODUCT_PACKAGES += \
      libprotobuf-cpp-full-3.9.1-vendorcompat \
+diff --git a/device/motorola/eqe/sepolicy/vendor/property_contexts b/device/motorola/eqe/sepolicy/vendor/property_contexts
+index 61d92be..a55053a 100644
+--- a/device/motorola/eqe/sepolicy/vendor/property_contexts
++++ b/device/motorola/eqe/sepolicy/vendor/property_contexts
+@@ -1,5 +1,4 @@
+ # Camera
+-ro.vendor.camera.res.fmq.size   u:object_r:vendor_camera_prop:s0
+ vendor.camera.led.torchmode     u:object_r:vendor_camera_prop:s0
+ 
+ # Radio
