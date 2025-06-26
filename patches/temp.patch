@@ -28,3 +28,15 @@ index 0b1eb90..1f40032 100644
      </array>
      <array name="config_ambientThresholdsOfPeakRefreshRate">
          <item>-1</item>
+diff --git a/device.mk b/device.mk
+index 904890b..0f426c4 100644
+--- a/device.mk
++++ b/device.mk
+@@ -262,7 +262,6 @@ PRODUCT_PACKAGES += \
+ # MotoActions
+ PRODUCT_PACKAGES += \
+     MotoActions \
+-    MotoCommonOverlay
+ 
+ # NFC
+ PRODUCT_PACKAGES += \
