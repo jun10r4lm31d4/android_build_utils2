@@ -15,13 +15,16 @@ index 904890b..158b04b 100644
  # Protobuf
  PRODUCT_PACKAGES += \
      libprotobuf-cpp-full-3.9.1-vendorcompat \
-diff --git a/device/motorola/eqe/sepolicy/vendor/property_contexts b/device/motorola/eqe/sepolicy/vendor/property_contexts
-index 61d92be..a55053a 100644
---- a/device/motorola/eqe/sepolicy/vendor/property_contexts
-+++ b/device/motorola/eqe/sepolicy/vendor/property_contexts
-@@ -1,5 +1,4 @@
- # Camera
--ro.vendor.camera.res.fmq.size   u:object_r:vendor_camera_prop:s0
- vendor.camera.led.torchmode     u:object_r:vendor_camera_prop:s0
- 
- # Radio
+diff --git a/resource-overlay/eqe/Frameworks/res/values/config.xml b/resource-overlay/eqe/Frameworks/res/values/config.xml
+index 0b1eb90..1f40032 100644
+--- a/resource-overlay/eqe/Frameworks/res/values/config.xml
++++ b/resource-overlay/eqe/Frameworks/res/values/config.xml
+@@ -266,7 +266,7 @@
+     <!-- Not allow to switch to higher refresh rate when (display, ambient) brightness falls into
+          the region defined by the two arrays -->
+     <array name="config_brightnessThresholdsOfPeakRefreshRate">
+-        <item>50</item>
++        <item>-1</item>
+     </array>
+     <array name="config_ambientThresholdsOfPeakRefreshRate">
+         <item>-1</item>
