@@ -21,10 +21,10 @@ Change-Id: I3602d0c240812e4805c5ecba6fc6d4ca1e0723d7
  create mode 100644 MotoActions/src/org/lineageos/settings/device/ModelNumberFragment.java
  create mode 100644 MotoActions/src/org/lineageos/settings/device/SummaryProvider.java
 
-diff --git a/MotoActions/AndroidManifest.xml b/MotoActions/AndroidManifest.xml
+diff --git a/hardware/motorola/MotoActions/AndroidManifest.xml b/hardware/motorola/MotoActions/AndroidManifest.xml
 index dea1bf2..126d506 100644
---- a/MotoActions/AndroidManifest.xml
-+++ b/MotoActions/AndroidManifest.xml
+--- a/hardware/motorola/MotoActions/AndroidManifest.xml
++++ b/hardware/motorola/MotoActions/AndroidManifest.xml
 @@ -60,6 +60,27 @@
                  android:resource="@string/device_gestures_panel_summary" />
          </activity>
@@ -53,11 +53,11 @@ index dea1bf2..126d506 100644
      </application>
  
  </manifest>
-diff --git a/MotoActions/res/values/strings.xml b/MotoActions/res/values/strings.xml
+diff --git a/hardware/motorola/MotoActions/res/values/strings.xml b/hardware/motorola/MotoActions/res/values/strings.xml
 new file mode 100644
 index 0000000..a7979fd
 --- /dev/null
-+++ b/MotoActions/res/values/strings.xml
++++ b/hardware/motorola/MotoActions/res/values/strings.xml
 @@ -0,0 +1,12 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<!--
@@ -71,11 +71,11 @@ index 0000000..a7979fd
 +    <string name="carrier_title">Software channel (carrier)</string>
 +
 +</resources>
-diff --git a/MotoActions/res/xml/model_number_panel.xml b/MotoActions/res/xml/model_number_panel.xml
+diff --git a/hardware/motorola/MotoActions/res/xml/model_number_panel.xml b/hardware/motorola/MotoActions/res/xml/model_number_panel.xml
 new file mode 100644
 index 0000000..abaa6bb
 --- /dev/null
-+++ b/MotoActions/res/xml/model_number_panel.xml
++++ b/hardware/motorola/MotoActions/res/xml/model_number_panel.xml
 @@ -0,0 +1,36 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<!--
@@ -113,11 +113,11 @@ index 0000000..abaa6bb
 +        settings:enableCopying="true" />
 +
 +</PreferenceScreen>
-diff --git a/MotoActions/src/org/lineageos/settings/device/ModelNumberActivity.java b/MotoActions/src/org/lineageos/settings/device/ModelNumberActivity.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ModelNumberActivity.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ModelNumberActivity.java
 new file mode 100644
 index 0000000..da98205
 --- /dev/null
-+++ b/MotoActions/src/org/lineageos/settings/device/ModelNumberActivity.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ModelNumberActivity.java
 @@ -0,0 +1,35 @@
 +/*
 + * Copyright (c) 2016 The CyanogenMod Project
@@ -154,11 +154,11 @@ index 0000000..da98205
 +                .commit();
 +    }
 +}
-diff --git a/MotoActions/src/org/lineageos/settings/device/ModelNumberFragment.java b/MotoActions/src/org/lineageos/settings/device/ModelNumberFragment.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ModelNumberFragment.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ModelNumberFragment.java
 new file mode 100644
 index 0000000..017a6d8
 --- /dev/null
-+++ b/MotoActions/src/org/lineageos/settings/device/ModelNumberFragment.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ModelNumberFragment.java
 @@ -0,0 +1,36 @@
 +/*
 + * Copyright (C) 2023 ArrowOS
@@ -196,10 +196,10 @@ index 0000000..017a6d8
 +                .setSummary(MotoActionsSettings.getCarrierString(getActivity()));
 +    }
 +}
-diff --git a/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java b/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
 index fcd05b0..2701c27 100644
---- a/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
-+++ b/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
+--- a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
 @@ -23,6 +23,7 @@
  import android.content.Context;
  import android.content.SharedPreferences;
@@ -239,11 +239,11 @@ index fcd05b0..2701c27 100644
      private void loadPreferences(SharedPreferences sharedPreferences) {
          mChopChopEnabled = sharedPreferences.getBoolean(GESTURE_CHOP_CHOP_KEY, true);
          mIrWakeUpEnabled = sharedPreferences.getBoolean(GESTURE_IR_WAKEUP_KEY, true);
-diff --git a/MotoActions/src/org/lineageos/settings/device/SummaryProvider.java b/MotoActions/src/org/lineageos/settings/device/SummaryProvider.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/SummaryProvider.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/SummaryProvider.java
 new file mode 100644
 index 0000000..6595b7e
 --- /dev/null
-+++ b/MotoActions/src/org/lineageos/settings/device/SummaryProvider.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/SummaryProvider.java
 @@ -0,0 +1,79 @@
 +/*
 + * Copyright (C) 2019 The Android Open Source Project
@@ -334,10 +334,10 @@ Subject: [PATCH 2/4] MotoActions: Move doze to lockscreen settings
  MotoActions/AndroidManifest.xml | 12 ++++++++++--
  1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/MotoActions/AndroidManifest.xml b/MotoActions/AndroidManifest.xml
+diff --git a/hardware/motorola/MotoActions/AndroidManifest.xml b/hardware/motorola/MotoActions/AndroidManifest.xml
 index 126d506..899e289 100644
---- a/MotoActions/AndroidManifest.xml
-+++ b/MotoActions/AndroidManifest.xml
+--- a/hardware/motorola/MotoActions/AndroidManifest.xml
++++ b/hardware/motorola/MotoActions/AndroidManifest.xml
 @@ -39,9 +39,17 @@
              android:label="@string/ambient_display_gestures_title"
              android:theme="@style/Theme.SubSettingsBase">
@@ -396,11 +396,11 @@ Change-Id: Iadd3deb6bb6a06f3c7ef7c23df8ffb4ed0178ae6
  delete mode 100644 overlay/MotoFrameworksResTarget/AndroidManifest.xml
  delete mode 100644 overlay/MotoFrameworksResTarget/res/values/config.xml
 
-diff --git a/MotoActions/res/drawable/ic_settings_twist.xml b/MotoActions/res/drawable/ic_settings_twist.xml
+diff --git a/hardware/motorola/MotoActions/res/drawable/ic_settings_twist.xml b/hardware/motorola/MotoActions/res/drawable/ic_settings_twist.xml
 new file mode 100644
 index 0000000..f04e77f
 --- /dev/null
-+++ b/MotoActions/res/drawable/ic_settings_twist.xml
++++ b/hardware/motorola/MotoActions/res/drawable/ic_settings_twist.xml
 @@ -0,0 +1,26 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -428,10 +428,10 @@ index 0000000..f04e77f
 +    <path android:strokeColor="@color/quick" android:pathData="M29.44,16.46a1,1 0,0 1,-0.53 -0.15A26.91,26.91 0,0 1,24.82 13c-2.7,-2.63 -4.82,-6.46 -3.54,-8 0.74,-0.92 2,-0.79 3.78,0.38A1,1 0,1 1,24 7a5.43,5.43 0,0 0,-1.09 -0.58,11.45 11.45,0 0,0 3.32,5.18 23.86,23.86 0,0 0,3.78 3,1 1,0 0,1 0.3,1.37A1,1 0,0 1,29.44 16.46Z" />
 +    <path android:pathData="M34.25,18.78a6.07,6.07 0,0 1,-1.57 -0.23,1 1,0 1,1 0.52,-1.92 3.44,3.44 0,0 0,1.23 0.17c0,-0.55 -0.83,-2.31 -3.33,-5a22.89,22.89 0,0 0,-3.92 -3.41,1 1,0 0,1 1.09,-1.65 24.54,24.54 0,0 1,4.28 3.71c4,4.36 4.18,6.45 3.59,7.43A2,2 0,0 1,34.25 18.78Z" />
 +</vector>
-diff --git a/MotoActions/res/xml/actions_panel.xml b/MotoActions/res/xml/actions_panel.xml
+diff --git a/hardware/motorola/MotoActions/res/xml/actions_panel.xml b/hardware/motorola/MotoActions/res/xml/actions_panel.xml
 index 2fc32b9..21f5adb 100644
---- a/MotoActions/res/xml/actions_panel.xml
-+++ b/MotoActions/res/xml/actions_panel.xml
+--- a/hardware/motorola/MotoActions/res/xml/actions_panel.xml
++++ b/hardware/motorola/MotoActions/res/xml/actions_panel.xml
 @@ -22,6 +22,13 @@
      <PreferenceCategory
          android:key="actions_key">
@@ -446,10 +446,10 @@ index 2fc32b9..21f5adb 100644
          <SwitchPreferenceCompat
              android:key="gesture_chop_chop"
              android:defaultValue="true"
-diff --git a/MotoActions/src/org/lineageos/settings/device/ActionsPreferenceFragment.java b/MotoActions/src/org/lineageos/settings/device/ActionsPreferenceFragment.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ActionsPreferenceFragment.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ActionsPreferenceFragment.java
 index eab7ca4..ea83bb1 100644
---- a/MotoActions/src/org/lineageos/settings/device/ActionsPreferenceFragment.java
-+++ b/MotoActions/src/org/lineageos/settings/device/ActionsPreferenceFragment.java
+--- a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ActionsPreferenceFragment.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/ActionsPreferenceFragment.java
 @@ -23,13 +23,21 @@
  import androidx.preference.PreferenceCategory;
  import androidx.preference.PreferenceFragment;
@@ -472,10 +472,10 @@ index eab7ca4..ea83bb1 100644
      }
  
      @Override
-diff --git a/MotoActions/src/org/lineageos/settings/device/MotoActionsService.java b/MotoActions/src/org/lineageos/settings/device/MotoActionsService.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsService.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsService.java
 index 740fd64..9507387 100644
---- a/MotoActions/src/org/lineageos/settings/device/MotoActionsService.java
-+++ b/MotoActions/src/org/lineageos/settings/device/MotoActionsService.java
+--- a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsService.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsService.java
 @@ -26,6 +26,7 @@
  import android.os.PowerManager;
  import android.util.Log;
@@ -492,10 +492,10 @@ index 740fd64..9507387 100644
          mUpdatedStateNotifiers.add(new ChopChopSensor(actionsSettings, sensorHelper));
          mUpdatedStateNotifiers.add(new ProximitySilencer(actionsSettings, this, sensorHelper));
          mUpdatedStateNotifiers.add(new FlipToMute(actionsSettings, this, sensorHelper));
-diff --git a/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java b/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
 index 2701c27..73b6841 100644
---- a/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
-+++ b/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
+--- a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/MotoActionsSettings.java
 @@ -29,10 +29,12 @@
  
  import androidx.preference.PreferenceManager;
@@ -558,10 +558,10 @@ index 2701c27..73b6841 100644
                          mChopChopEnabled = sharedPrefs.getBoolean(GESTURE_CHOP_CHOP_KEY, true);
                      } else if (GESTURE_IR_WAKEUP_KEY.equals(key)) {
                          mIrWakeUpEnabled = sharedPrefs.getBoolean(GESTURE_IR_WAKEUP_KEY, true);
-diff --git a/MotoActions/src/org/lineageos/settings/device/SensorHelper.java b/MotoActions/src/org/lineageos/settings/device/SensorHelper.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/SensorHelper.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/SensorHelper.java
 index 3457bd3..a4d2a33 100644
---- a/MotoActions/src/org/lineageos/settings/device/SensorHelper.java
-+++ b/MotoActions/src/org/lineageos/settings/device/SensorHelper.java
+--- a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/SensorHelper.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/SensorHelper.java
 @@ -31,6 +31,7 @@
  public class SensorHelper {
      private static final String TAG = "MotoActions";
@@ -581,11 +581,11 @@ index 3457bd3..a4d2a33 100644
      public Sensor getChopChopSensor() {
          return mSensorManager.getDefaultSensor(SENSOR_TYPE_MMI_CHOP_CHOP, true);
      }
-diff --git a/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationAction.java b/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationAction.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationAction.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationAction.java
 new file mode 100644
 index 0000000..d8ab174
 --- /dev/null
-+++ b/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationAction.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationAction.java
 @@ -0,0 +1,137 @@
 +/*
 + * Copyright (c) 2015 The CyanogenMod Project
@@ -724,11 +724,11 @@ index 0000000..d8ab174
 +        return new ComponentName(activity.applicationInfo.packageName, activity.name);
 +    }
 +}
-diff --git a/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationSensor.java b/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationSensor.java
+diff --git a/hardware/motorola/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationSensor.java b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationSensor.java
 new file mode 100644
 index 0000000..847777c
 --- /dev/null
-+++ b/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationSensor.java
++++ b/hardware/motorola/MotoActions/src/org/lineageos/settings/device/actions/CameraActivationSensor.java
 @@ -0,0 +1,70 @@
 +/*
 + * Copyright (c) 2015 The CyanogenMod Project
@@ -800,10 +800,10 @@ index 0000000..847777c
 +        return sensorHelper.getCameraActivationSensor() != null;
 +    }
 +}
-diff --git a/overlay/Android.bp b/overlay/Android.bp
+diff --git a/hardware/motorola/overlay/Android.bp b/hardware/motorola/overlay/Android.bp
 deleted file mode 100644
 index e9f705e..0000000
---- a/overlay/Android.bp
+--- a/hardware/motorola/overlay/Android.bp
 +++ /dev/null
 @@ -1,11 +0,0 @@
 -//
@@ -817,10 +817,10 @@ index e9f705e..0000000
 -        "FrameworksResMotoCommon",
 -    ]
 -}
-diff --git a/overlay/MotoFrameworksResTarget/Android.bp b/overlay/MotoFrameworksResTarget/Android.bp
+diff --git a/hardware/motorola/overlay/MotoFrameworksResTarget/Android.bp b/hardware/motorola/overlay/MotoFrameworksResTarget/Android.bp
 deleted file mode 100644
 index 7019d24..0000000
---- a/overlay/MotoFrameworksResTarget/Android.bp
+--- a/hardware/motorola/overlay/MotoFrameworksResTarget/Android.bp
 +++ /dev/null
 @@ -1,10 +0,0 @@
 -//
@@ -833,10 +833,10 @@ index 7019d24..0000000
 -    sdk_version: "current",
 -    vendor: true
 -}
-diff --git a/overlay/MotoFrameworksResTarget/AndroidManifest.xml b/overlay/MotoFrameworksResTarget/AndroidManifest.xml
+diff --git a/hardware/motorola/overlay/MotoFrameworksResTarget/AndroidManifest.xml b/hardware/motorola/overlay/MotoFrameworksResTarget/AndroidManifest.xml
 deleted file mode 100644
 index a288b18..0000000
---- a/overlay/MotoFrameworksResTarget/AndroidManifest.xml
+--- a/hardware/motorola/overlay/MotoFrameworksResTarget/AndroidManifest.xml
 +++ /dev/null
 @@ -1,9 +0,0 @@
 -<?xml version="1.0" encoding="utf-8"?>
@@ -848,10 +848,10 @@ index a288b18..0000000
 -    package="android.overlay.moto.common">
 -    <overlay android:targetPackage="android" android:isStatic="true" android:priority="500"/>
 -</manifest>
-diff --git a/overlay/MotoFrameworksResTarget/res/values/config.xml b/overlay/MotoFrameworksResTarget/res/values/config.xml
+diff --git a/hardware/motorola/overlay/MotoFrameworksResTarget/res/values/config.xml b/hardware/motorola/overlay/MotoFrameworksResTarget/res/values/config.xml
 deleted file mode 100644
 index c6086a6..0000000
---- a/overlay/MotoFrameworksResTarget/res/values/config.xml
+--- a/hardware/motorola/overlay/MotoFrameworksResTarget/res/values/config.xml
 +++ /dev/null
 @@ -1,12 +0,0 @@
 -<?xml version="1.0" encoding="utf-8"?>
@@ -877,10 +877,10 @@ Extend 126240e56442daa2ec250fd1072337984cc69e31
  MotoActions/res/drawable/ic_settings_twist.xml | 14 +++++++-------
  1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/MotoActions/res/drawable/ic_settings_twist.xml b/MotoActions/res/drawable/ic_settings_twist.xml
+diff --git a/hardware/motorola/MotoActions/res/drawable/ic_settings_twist.xml b/hardware/motorola/MotoActions/res/drawable/ic_settings_twist.xml
 index f04e77f..5421eb5 100644
---- a/MotoActions/res/drawable/ic_settings_twist.xml
-+++ b/MotoActions/res/drawable/ic_settings_twist.xml
+--- a/hardware/motorola/MotoActions/res/drawable/ic_settings_twist.xml
++++ b/hardware/motorola/MotoActions/res/drawable/ic_settings_twist.xml
 @@ -9,18 +9,18 @@
      <path android:fillColor="#00000000" android:pathData="M20.0003,20.0038m-16.3277,6.4349a17.55,17.55 113.49,1 1,32.6554 -12.8699a17.55,17.55 113.49,1 1,-32.6554 12.8699" android:strokeColor="#ff0bbbef" android:strokeWidth="0.28" android:strokeAlpha="0.0" android:fillAlpha="0.0" />
      <path android:fillColor="#00000000" android:pathData="M20.0003,20.0062m-6.4349,16.3277a17.55,17.55 66.51,1 1,12.8699 -32.6554a17.55,17.55 66.51,1 1,-12.8699 32.6554" android:strokeColor="#ff0bbbef" android:strokeWidth="0.28" android:strokeAlpha="0.0" android:fillAlpha="0.0" />
