@@ -15,10 +15,10 @@ index 904890b..158b04b 100644
  # Protobuf
  PRODUCT_PACKAGES += \
      libprotobuf-cpp-full-3.9.1-vendorcompat \
-diff --git a/resource-overlay/eqe/Frameworks/res/values/config.xml b/resource-overlay/eqe/Frameworks/res/values/config.xml
+diff --git a/device/motorola/eqe/resource-overlay/eqe/Frameworks/res/values/config.xml b/device/motorola/eqe/resource-overlay/eqe/Frameworks/res/values/config.xml
 index 0b1eb90..1f40032 100644
---- a/resource-overlay/eqe/Frameworks/res/values/config.xml
-+++ b/resource-overlay/eqe/Frameworks/res/values/config.xml
+--- a/device/motorola/eqe/resource-overlay/eqe/Frameworks/res/values/config.xml
++++ b/device/motorola/eqe/resource-overlay/eqe/Frameworks/res/values/config.xml
 @@ -266,7 +266,7 @@
      <!-- Not allow to switch to higher refresh rate when (display, ambient) brightness falls into
           the region defined by the two arrays -->
@@ -28,10 +28,10 @@ index 0b1eb90..1f40032 100644
      </array>
      <array name="config_ambientThresholdsOfPeakRefreshRate">
          <item>-1</item>
-diff --git a/device.mk b/device.mk
+diff --git a/device/motorola/eqe/device.mk b/device/motorola/eqe/device.mk
 index 904890b..0f426c4 100644
---- a/device.mk
-+++ b/device.mk
+--- a/device/motorola/eqe/device.mk
++++ b/device/motorola/eqe/device.mk
 @@ -262,7 +262,6 @@ PRODUCT_PACKAGES += \
  # MotoActions
  PRODUCT_PACKAGES += \
