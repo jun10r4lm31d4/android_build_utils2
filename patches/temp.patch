@@ -15,19 +15,6 @@ index 904890b..158b04b 100644
  # Protobuf
  PRODUCT_PACKAGES += \
      libprotobuf-cpp-full-3.9.1-vendorcompat \
-diff --git a/device/motorola/eqe/resource-overlay/eqe/Frameworks/res/values/config.xml b/device/motorola/eqe/resource-overlay/eqe/Frameworks/res/values/config.xml
-index 0b1eb90..1f40032 100644
---- a/device/motorola/eqe/resource-overlay/eqe/Frameworks/res/values/config.xml
-+++ b/device/motorola/eqe/resource-overlay/eqe/Frameworks/res/values/config.xml
-@@ -266,7 +266,7 @@
-     <!-- Not allow to switch to higher refresh rate when (display, ambient) brightness falls into
-          the region defined by the two arrays -->
-     <array name="config_brightnessThresholdsOfPeakRefreshRate">
--        <item>50</item>
-+        <item>-1</item>
-     </array>
-     <array name="config_ambientThresholdsOfPeakRefreshRate">
-         <item>-1</item>
 diff --git a/device/motorola/eqe/device.mk b/device/motorola/eqe/device.mk
 index 904890b..0f426c4 100644
 --- a/device/motorola/eqe/device.mk
@@ -40,3 +27,15 @@ index 904890b..0f426c4 100644
  
  # NFC
  PRODUCT_PACKAGES += \
+diff --git a/device/motorola/eqe/BoardConfig.mk b/device/motorola/eqe/BoardConfig.mk
+index 28cbd6c..3817c9b 100644
+--- a/device/motorola/eqe/BoardConfig.mk
++++ b/device/motorola/eqe/BoardConfig.mk
+@@ -22,6 +22,7 @@ BOARD_MKBOOTIMG_INIT_ARGS += --header_version $(BOARD_INIT_BOOT_HEADER_VERSION)
+ 
+ # Display
+ TARGET_SCREEN_DENSITY := 450
++TARGET_HAS_WIDE_COLOR_DISPLAY := true
+ 
+ # DTB / DTBO
+ BOARD_INCLUDE_DTB_IN_BOOTIMG := true
