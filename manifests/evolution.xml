@@ -5,7 +5,7 @@
     <remote name="eqe-peace" fetch="https://github.com/SomeEmptyBox" />
     <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
     <remote name="eqe-gitlab" fetch="https://gitlab.com/moto-sm7550" />
-    <remote name="eqe-lineage" fetch="https://github.com/LineageOS" />
+    <remote name="eqe-evolution" fetch="https://github.com/Evolution-X-Devices" />
 
     <!-- Device -->
     <project
@@ -15,10 +15,10 @@
         revision="evolution"
     />
     <project
-        remote="eqe-lineage"
-        name="android_hardware_motorola"
+        remote="eqe-evolution"
+        name="hardware_motorola"
         path="hardware/motorola"
-        revision="lineage-22.2"
+        revision="vic"
     />
 
     <!-- Vendor -->
