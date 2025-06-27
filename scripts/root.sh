@@ -85,14 +85,13 @@ patches=(
     "susfs_kernel"
     "syscall_hooks"
     "hide_stuff"
-    "susfs_backport"
 )
 
 for patch in "${patches[@]}"; do
     patch_url="${kernel_patches}/${patch}.patch"
     echo "Processing patch: ${patch} from ${patch_url}"
 
-    if [[ "${ksu_variant}" == "ksu" && ("${patch}" == "susfs_backport" || "${patch}" == "syscall_hooks") ]]; then
+    if [[ "${ksu_variant}" == "ksu" && "${patch}" == "syscall_hooks" ]]; then
         echo "Skipping patch: ${patch} because ksu_variant is set to 'ksu'."
         continue
     fi
