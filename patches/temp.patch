@@ -27,15 +27,3 @@ index 904890b..0f426c4 100644
  
  # NFC
  PRODUCT_PACKAGES += \
-diff --git a/device/motorola/eqe/BoardConfig.mk b/device/motorola/eqe/BoardConfig.mk
-index 28cbd6c..3817c9b 100644
---- a/device/motorola/eqe/BoardConfig.mk
-+++ b/device/motorola/eqe/BoardConfig.mk
-@@ -22,6 +22,7 @@ BOARD_MKBOOTIMG_INIT_ARGS += --header_version $(BOARD_INIT_BOOT_HEADER_VERSION)
- 
- # Display
- TARGET_SCREEN_DENSITY := 450
-+TARGET_HAS_WIDE_COLOR_DISPLAY := true
- 
- # DTB / DTBO
- BOARD_INCLUDE_DTB_IN_BOOTIMG := true
