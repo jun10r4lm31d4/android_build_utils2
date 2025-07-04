@@ -51,6 +51,7 @@ esac
 git clone --branch "${susfs_branch}" "${susfs_repo}" susfs
 cp ./susfs/kernel_patches/fs/* fs
 cp ./susfs/kernel_patches/include/linux/* include/linux
+rm -rf susfs
 
 if [[ "${ksu_variant}" == "ksu" ]]; then
     echo "Applying SUSFS patches for Official KernelSU..."
