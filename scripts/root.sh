@@ -3,7 +3,6 @@
 ksu_variant="${1}"
 ksu_branch="${2}"
 
-kernel_root="kernel/motorola/sm7550"
 kernel_patches="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/patches/kernel"
 
 susfs_repo="https://gitlab.com/simonpunk/susfs4ksu"
@@ -24,9 +23,6 @@ trap 'handle_error "An unexpected error occurred"' ERR
 echo
 echo "==================== Integrating KernelSU with SUSFS ===================="
 echo
-
-echo "Navigating to kernel directory: ${kernel_root}"
-cd ${kernel_root}
 
 case "${ksu_branch}" in
     "stable")
@@ -100,9 +96,6 @@ for patch in "${patches[@]}"; do
     curl -fLSs "${patch_url}" | patch --strip 1 --forward --fuzz 3 || handle_error "Failed to apply ${patch} patch"
     echo "${patch} patch applied successfully."
 done
-
-echo "changing back to android root..."
-cd -
 
 echo
 echo "==================== Integration completed successfully ===================="
