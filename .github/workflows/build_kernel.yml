@@ -1,0 +1,70 @@
+name: Build Kernel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-kernel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Maximize Build Space
+        uses: AdityaGarg8/remove-unwanted-software@master
+        with:
+          remove-dotnet: 'true'          # Frees ~2 GB
+          remove-android: 'true'         # Frees ~9 GB
+          remove-haskell: 'true'         # Frees ~5.2 GB
+          remove-codeql: 'true'          # Frees ~5.4 GB
+          remove-docker-images: 'true'   # Frees ~3.2 GB
+          remove-large-packages: 'true'  # Frees ~3.1 GB
+          remove-swapfile: 'true'        # Frees ~4 GB
+          remove-cached-tools: 'false'   # Avoid unless confirmed safe
+          verbose: 'true'                # Enable detailed logging
+
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          lfs: false
+
+      - name: Install Packages
+        run: sudo apt update -y && sudo apt install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig repo
+
+      - name: Set environment variables
+        run: |
+          echo "UNPACK=$GITHUB_WORKSPACE/tools/mkbootimg/unpack_bootimg.py" >> $GITHUB_ENV
+          echo "REPACK=$GITHUB_WORKSPACE/tools/mkbootimg/repack_bootimg.py" >> $GITHUB_ENV
+          echo "STOCK_ROM=https://mirrors.lolinet.com/firmware/lenomola/2024/eqe/official/RETIN/XT2403-1_EQE_RETIN_15_V1UMS35H.10-67-7-1_subsidy-DEFAULT_regulatory-DEFAULT_cid50_CFC.xml.zip" >> $GITHUB_ENV
+
+      - name: Check Disk Space Before Sync
+        run: |
+          echo "Disk space before kernel source sync:"
+          df -h
+          ls
+
+      - name: Initialize and Sync Kernel Source
+        run: |
+          repo init -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15
+          mkdir -p .repo/local_manifests && cp manifests/kernel.xml .repo/local_manifests/default.xml
+          repo --trace sync -c -j$(nproc --all) --no-tags --fail-fast
+
+      - name: Build
+        run: |
+          LTO=thin BUILD_CONFIG=sm7550/build.config.gki.aarch64 build/build.sh || exit 1
+
+      - name: Make bootimgs
+        run: |
+          mkdir -p bootimgs && cd bootimgs
+          curl -fLSs "$STOCK_ROM" -o "$(mktemp /tmp/zip_XXXXXX.zip)"
+          unzip -o "$(ls -t /tmp/zip_*.zip | head -1)" "boot.img" -d .
+          rm "$(ls -t /tmp/zip_*.zip | head -1)"
+          FULL_PATH="$(pwd)/boot.img"
+          $UNPACK --boot_img="$FULL_PATH"
+          cp ../out/*/dist/Image kernel
+          $REPACK --src_bootimg="$FULL_PATH" --dst_bootimg="$FULL_PATH"
+
+      - name: Upload bootimg
+        uses: actions/upload-artifact@main
+        with:
+          name: boot.img
+          path: |
+            *.img
