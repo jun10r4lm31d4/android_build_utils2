@@ -25,17 +25,8 @@ jobs:
         with:
           lfs: false
 
-      - name: Set environment variables
-        run: |
-          echo "STOCK_ROM=$(mktemp /tmp/remote_zip_XXXXXX.zip)" >> $GITHUB_ENV
-          echo "STOCK_ROM_URL=https://mirrors.lolinet.com/firmware/lenomola/2024/eqe/official/RETIN/XT2403-1_EQE_RETIN_15_V1UMS35H.10-67-7-1_subsidy-DEFAULT_regulatory-DEFAULT_cid50_CFC.xml.zip" >> $GITHUB_ENV
-          echo "MAGISKBOOT=https://raw.githubusercontent.com/TheWildJames/Android_Kernel_Tutorials/gki-2.0/tools/magiskboot" >> $GITHUB_ENV
-
-      - name: Install Packages and Dependencies
-        run: |
-          sudo apt update -y && sudo apt install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig repo
-          sudo curl -fLSs "$MAGISKBOOT" -o /usr/local/bin/magiskboot && sudo chmod +x /usr/local/bin/magiskboot
-          curl -fLSs "$STOCK_ROM_URL" -o "$STOCK_ROM"
+      - name: Install Packages
+        run: sudo apt update -y && sudo apt install -y repo
 
       - name: Initialize and Sync Kernel Source
         run: |
@@ -85,14 +76,8 @@ jobs:
       - name: Build
         run: |
           LTO=thin BUILD_CONFIG=sm7550/build.config.gki.aarch64 build/build.sh || exit 1
-
-      - name: Make bootimgs
-        run: |
-          mkdir -p artifacts && cd artifacts
-          unzip -p "$STOCK_ROM" "boot.img" > stock_boot.img
-          magiskboot unpack stock_boot.img
-          cp ../out/*/dist/Image kernel
-          magiskboot repack stock_boot.img boot.img
+          mkdir artifacts && cd artifacts
+          cp ../out/*/dist/Image .
 
       - name: Make AnyKernel Zip
         run: |
