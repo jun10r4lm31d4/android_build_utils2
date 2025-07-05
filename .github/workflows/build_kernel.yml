@@ -37,12 +37,50 @@ jobs:
           sudo curl -fLSs "$MAGISKBOOT" -o /usr/local/bin/magiskboot && sudo chmod +x /usr/local/bin/magiskboot
           curl -fLSs "$STOCK_ROM_URL" -o "$STOCK_ROM"
 
-
       - name: Initialize and Sync Kernel Source
         run: |
           repo init -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15
           mkdir -p .repo/local_manifests && cp manifests/kernel.xml .repo/local_manifests/default.xml
           repo --trace sync -c -j$(nproc --all) --no-tags --fail-fast
+
+      - name: Add KernelSU
+        run: |
+          cd sm7550
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+
+      - name: Apply SUSFS Patches
+        run: |
+          cd sm7550
+          git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-android13-5.15
+          cp susfs4ksu/kernel_patches/fs/* fs
+          cp susfs4ksu/kernel_patches/include/linux/* include/linux
+          cd KernelSU
+          patch -p1 < ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
+          cd ..
+          patch -p1 < susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch
+
+      - name: Add SUSFS Configuration Settings
+        run: |
+          cat << EOF >> sm7550/arch/arm64/configs/gki_defconfig
+          CONFIG_KSU_SUSFS=y
+          CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n
+          CONFIG_KSU_SUSFS_SUS_PATH=y
+          CONFIG_KSU_SUSFS_SUS_MOUNT=y
+          CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
+          CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y
+          CONFIG_KSU_SUSFS_SUS_KSTAT=y
+          CONFIG_KSU_SUSFS_SUS_OVERLAYFS=y
+          CONFIG_KSU_SUSFS_TRY_UMOUNT=y
+          CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y
+          CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+          CONFIG_KSU_SUSFS_ENABLE_LOG=y
+          CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+          CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+          CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+          CONFIG_KSU_SUSFS_SUS_SU=y
+          EOF
+          # Remove check_defconfig
+          sed -i 's|check_defconfig||g' sm7550/build.config.gki
 
       - name: Build
         run: |
