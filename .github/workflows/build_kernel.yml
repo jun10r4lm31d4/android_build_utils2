@@ -54,7 +54,16 @@ jobs:
           cp ../out/*/dist/Image kernel
           ./magiskboot repack stock_boot.img boot.img
 
-      - name: Upload bootimg
+      - name: Make AnyKernel Zip
+        run: |
+          git clone https://github.com/Kernel-SU/AnyKernel3.git && cd AnyKernel3
+          sed -i 's|^kernel\.string=.*|kernel.string=Kernel by SomeEmptyBox|' anykernel.sh
+          sed -i 's|^do\.devicecheck=.*|do.devicecheck=1|' anykernel.sh
+          sed -i 's|^device\.name1=.*|device.name1=eqe|' anykernel.sh
+          cp ../out/*/dist/Image .
+          zip -r ../artifacts/AnyKernel.zip .
+
+      - name: Upload Artifacts
         uses: actions/upload-artifact@main
         with:
           path: artifacts/*
