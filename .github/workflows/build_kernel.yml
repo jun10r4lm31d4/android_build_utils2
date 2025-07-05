@@ -25,13 +25,18 @@ jobs:
         with:
           lfs: false
 
-      - name: Install Packages
-        run: sudo apt update -y && sudo apt install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig repo
-
       - name: Set environment variables
         run: |
-          echo "STOCK_ROM=https://mirrors.lolinet.com/firmware/lenomola/2024/eqe/official/RETIN/XT2403-1_EQE_RETIN_15_V1UMS35H.10-67-7-1_subsidy-DEFAULT_regulatory-DEFAULT_cid50_CFC.xml.zip" >> $GITHUB_ENV
+          echo "STOCK_ROM=$(mktemp /tmp/remote_zip_XXXXXX.zip)" >> $GITHUB_ENV
+          echo "STOCK_ROM_URL=https://mirrors.lolinet.com/firmware/lenomola/2024/eqe/official/RETIN/XT2403-1_EQE_RETIN_15_V1UMS35H.10-67-7-1_subsidy-DEFAULT_regulatory-DEFAULT_cid50_CFC.xml.zip" >> $GITHUB_ENV
           echo "MAGISKBOOT=https://raw.githubusercontent.com/TheWildJames/Android_Kernel_Tutorials/gki-2.0/tools/magiskboot" >> $GITHUB_ENV
+
+      - name: Install Packages and Dependencies
+        run: |
+          sudo apt update -y && sudo apt install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig repo
+          sudo curl -fLSs "$MAGISKBOOT" -o /usr/local/bin/magiskboot && sudo chmod +x /usr/local/bin/magiskboot
+          curl -fLSs "$STOCK_ROM_URL" -o "$STOCK_ROM"
+
 
       - name: Initialize and Sync Kernel Source
         run: |
@@ -46,13 +51,10 @@ jobs:
       - name: Make bootimgs
         run: |
           mkdir -p artifacts && cd artifacts
-          curl -fLSs "$STOCK_ROM" -o "$(mktemp /tmp/zip_XXXXXX.zip)"
-          unzip -p "$(ls -t /tmp/zip_*.zip | head -1)" "boot.img" > stock_boot.img
-          rm "$(ls -t /tmp/zip_*.zip | head -1)"
-          curl -LO "$MAGISKBOOT" && chmod +x magiskboot
-          ./magiskboot unpack stock_boot.img
+          unzip -p "$STOCK_ROM" "boot.img" > stock_boot.img
+          magiskboot unpack stock_boot.img
           cp ../out/*/dist/Image kernel
-          ./magiskboot repack stock_boot.img boot.img
+          magiskboot repack stock_boot.img boot.img
 
       - name: Make AnyKernel Zip
         run: |
