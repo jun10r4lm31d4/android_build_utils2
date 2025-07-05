@@ -19,7 +19,6 @@ jobs:
           remove-large-packages: 'true'  # Frees ~3.1 GB
           remove-swapfile: 'true'        # Frees ~4 GB
           remove-cached-tools: 'false'   # Avoid unless confirmed safe
-          verbose: 'true'                # Enable detailed logging
 
       - name: Checkout
         uses: actions/checkout@main
@@ -31,15 +30,8 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "UNPACK=$GITHUB_WORKSPACE/tools/mkbootimg/unpack_bootimg.py" >> $GITHUB_ENV
-          echo "REPACK=$GITHUB_WORKSPACE/tools/mkbootimg/repack_bootimg.py" >> $GITHUB_ENV
           echo "STOCK_ROM=https://mirrors.lolinet.com/firmware/lenomola/2024/eqe/official/RETIN/XT2403-1_EQE_RETIN_15_V1UMS35H.10-67-7-1_subsidy-DEFAULT_regulatory-DEFAULT_cid50_CFC.xml.zip" >> $GITHUB_ENV
-
-      - name: Check Disk Space Before Sync
-        run: |
-          echo "Disk space before kernel source sync:"
-          df -h
-          ls
+          echo "MAGISKBOOT=https://raw.githubusercontent.com/TheWildJames/Android_Kernel_Tutorials/gki-2.0/tools/magiskboot" >> $GITHUB_ENV
 
       - name: Initialize and Sync Kernel Source
         run: |
@@ -53,18 +45,16 @@ jobs:
 
       - name: Make bootimgs
         run: |
-          mkdir -p bootimgs && cd bootimgs
+          mkdir -p artifacts && cd artifacts
           curl -fLSs "$STOCK_ROM" -o "$(mktemp /tmp/zip_XXXXXX.zip)"
-          unzip -o "$(ls -t /tmp/zip_*.zip | head -1)" "boot.img" -d .
+          unzip -p "$(ls -t /tmp/zip_*.zip | head -1)" "boot.img" > stock_boot.img
           rm "$(ls -t /tmp/zip_*.zip | head -1)"
-          FULL_PATH="$(pwd)/boot.img"
-          $UNPACK --boot_img="$FULL_PATH"
+          curl -LO "$MAGISKBOOT" && chmod +x magiskboot
+          ./magiskboot unpack stock_boot.img
           cp ../out/*/dist/Image kernel
-          $REPACK --src_bootimg="$FULL_PATH" --dst_bootimg="$FULL_PATH"
+          ./magiskboot repack stock_boot.img boot.img
 
       - name: Upload bootimg
         uses: actions/upload-artifact@main
         with:
-          name: boot.img
-          path: |
-            *.img
+          path: artifacts/*
