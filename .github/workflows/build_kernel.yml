@@ -73,6 +73,12 @@ jobs:
           # Remove check_defconfig
           sed -i 's|check_defconfig||g' sm7550/build.config.gki
 
+      - name: Set Kernel Name
+        run: |
+          cd sm7550
+          sed -i '$s|$res|-EclipseKernel|g' scripts/setlocalversion
+          sed -i 's| -dirty||g' scripts/setlocalversion
+
       - name: Build
         run: |
           LTO=thin BUILD_CONFIG=sm7550/build.config.gki.aarch64 build/build.sh || exit 1
@@ -82,11 +88,11 @@ jobs:
       - name: Make AnyKernel Zip
         run: |
           git clone https://github.com/Kernel-SU/AnyKernel3.git && cd AnyKernel3
-          sed -i 's|^kernel\.string=.*|kernel.string=Kernel by SomeEmptyBox|' anykernel.sh
+          sed -i 's|^kernel\.string=.*|kernel.string=Eclipse Kernel by SomeEmptyBox|' anykernel.sh
           sed -i 's|^do\.devicecheck=.*|do.devicecheck=1|' anykernel.sh
           sed -i 's|^device\.name1=.*|device.name1=eqe|' anykernel.sh
           cp ../out/*/dist/Image .
-          zip -r ../artifacts/AnyKernel.zip .
+          zip -r ../artifacts/EclipseKernel.zip .
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
