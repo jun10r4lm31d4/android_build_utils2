@@ -202,12 +202,14 @@ jobs:
         echo "Running build's log will show up here!"
 
         crave run --no-patch -- '# what you looking at ?
+        build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main"
 
         rm -rf .repo/local_manifests {device,vendor,kernel,hardware}/motorola
         '${{ needs.prepare.outputs.REPO_INIT }}'
-        curl -fLSs --create-dirs '${{ needs.prepare.outputs.LOCAL_MANIFEST }}' -o .repo/local_manifests/default.xml
+        curl -fLSs --create-dirs ${build_utils}/manifests/'${{ inputs.ROM_NAME }}'.xml -o .repo/local_manifests/default.xml
         git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys
         /opt/crave/resync.sh
+        curl -fLSs ${build_utils}/patches/telephony.patch | -p1 --forward
 
         cd device/motorola/eqe
         ./extract-files.py '${{ needs.prepare.outputs.DUMP_LINK }}'
