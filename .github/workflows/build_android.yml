@@ -128,28 +128,12 @@ jobs:
         echo "BUILD_COMMAND=brunch ${{ github.event.inputs.DEVICE_NAME }} ${{ github.event.inputs.BUILD_TYPE }}" >> "$GITHUB_OUTPUT"
         echo "LOCAL_MANIFEST=https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/manifests/${{ github.event.inputs.ROM_NAME }}.xml" >> "$GITHUB_OUTPUT"
 
-    - name: Checkout DumprX
-      uses: actions/checkout@main
-      with:
-        repository: DumprX/DumprX
-        path: DumprX
-
-    - name: Dump Stock ROM
-      id: dump
-      run: |
-        cd DumprX
-        bash setup.sh
-        bash dumper.sh https://mirrors.lolinet.com/firmware/lenomola/2024/eqe/official/RETIN/XT2403-1_EQE_RETIN_15_V1UMS35H.10-67-7-1_subsidy-DEFAULT_regulatory-DEFAULT_cid50_CFC.xml.zip
-        zip -r $GITHUB_RUN_ID.zip out
-        echo "DUMP_LINK=$(curl bashupload.com -T $GITHUB_RUN_ID.zip | grep -oP 'http://bashupload.com/[^ ]+')" >> "$GITHUB_OUTPUT"
-
     outputs:
       PROJECTFOLDER: ${{ steps.proj-variables.outputs.PROJECTFOLDER }}
       PROJECTID: ${{ steps.proj-variables.outputs.PROJECTID }}
       REPO_INIT: ${{ steps.proj-variables.outputs.REPO_INIT }}
       BUILD_COMMAND: ${{ steps.proj-variables.outputs.BUILD_COMMAND }}
       LOCAL_MANIFEST: ${{ steps.proj-variables.outputs.LOCAL_MANIFEST }}
-      DUMP_LINK: ${{ steps.dump.outputs.DUMP_LINK }}
 
   build:
     timeout-minutes: 1440
@@ -210,10 +194,6 @@ jobs:
         git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys
         /opt/crave/resync.sh
         curl -fLSs ${build_utils}/patches/telephony.patch | -p1 --forward
-
-        cd device/motorola/eqe
-        ./extract-files.py '${{ needs.prepare.outputs.DUMP_LINK }}'
-        cd -
 
         export BUILD_USERNAME=peace
         export BUILD_HOSTNAME=crave
