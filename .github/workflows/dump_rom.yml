@@ -1,0 +1,30 @@
+name: Dump ROM
+
+on:
+  workflow_dispatch:
+    inputs:
+      link:
+        description: "Direct ROM Link"
+        required: true
+
+jobs:
+  Dump:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout DumprX
+        uses: actions/checkout@main
+        with:
+          repository: DumprX/DumprX
+
+      - name: Setup DumprX
+        run: bash setup.sh
+
+      - name: Dump ROM
+        run: bash dumper.sh "${{ github.event.inputs.link }}"
+
+      - name: Zip Output Folder
+        run: zip -r $GITHUB_RUN_ID.zip out
+
+      - name: Upload to bashupload.com
+        run: curl bashupload.com -T $GITHUB_RUN_ID.zip
