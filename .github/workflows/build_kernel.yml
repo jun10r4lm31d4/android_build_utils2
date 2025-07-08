@@ -2,6 +2,12 @@ name: Build Kernel
 
 on:
   workflow_dispatch:
+    inputs:
+      release:
+        type: boolean
+        description: "Release"
+        required: false
+        default: false
 
 jobs:
   Build:
@@ -98,7 +104,7 @@ jobs:
 
       - name: Build KSU Module
         run: |
-          cd susfs4ksu
+          cd sm7550/susfs4ksu
           bash build_ksu_susfs_tool.sh
           bash build_ksu_module.sh
           cp ksu_module_susfs.zip ../artifacts
@@ -109,6 +115,7 @@ jobs:
           path: artifacts
 
   Release:
+    if: ${{ github.event.inputs.release == 'true' }}
     runs-on: ubuntu-latest
     needs: Build
 
