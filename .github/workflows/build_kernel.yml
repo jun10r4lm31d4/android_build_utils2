@@ -80,40 +80,25 @@ jobs:
 
           patch -p1 < susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch
 
-      - name: Add Configuration
+      - name: Add SUSFS Configuration Settings
         run: |
-          case "${{ matrix.kernelsu_variant }}" in
-            "KernelSU")
-              echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n" >> sm7550/arch/arm64/configs/gki_defconfig
-            ;;
-            "SukiSU")
-              echo "CONFIG_KSU_MANUAL_HOOK=y" >> sm7550/arch/arm64/configs/gki_defconfig
-            ;;
-          esac
-
           cat << EOF >> sm7550/arch/arm64/configs/gki_defconfig
-          # KernelSU config
-          CONFIG_KSU=y
           CONFIG_KSU_SUSFS=y
-
-          # tmpfs config
-          CONFIG_TMPFS_XATTR=y
-          CONFIG_TMPFS_POSIX_ACL=y
-
-          # Add additional config setting
-          CONFIG_IP_NF_TARGET_TTL=y
-          CONFIG_IP6_NF_TARGET_HL=y
-          CONFIG_IP6_NF_MATCH_HL=y
-
-          # BBR Config
-          CONFIG_TCP_CONG_ADVANCED=y
-          CONFIG_TCP_CONG_BBR=y
-          CONFIG_NET_SCH_FQ=y
-          CONFIG_TCP_CONG_BIC=n
-          CONFIG_TCP_CONG_WESTWOOD=n
-          CONFIG_TCP_CONG_HTCP=n
+          CONFIG_KSU_SUSFS_SUS_PATH=y
+          CONFIG_KSU_SUSFS_SUS_MOUNT=y
+          CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
+          CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y
+          CONFIG_KSU_SUSFS_SUS_KSTAT=y
+          CONFIG_KSU_SUSFS_SUS_OVERLAYFS=y
+          CONFIG_KSU_SUSFS_TRY_UMOUNT=y
+          CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y
+          CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+          CONFIG_KSU_SUSFS_ENABLE_LOG=y
+          CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+          CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+          CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+          CONFIG_KSU_SUSFS_SUS_SU=y
           EOF
-
           # Remove check_defconfig
           sed -i 's|check_defconfig||g' sm7550/build.config.gki
 
