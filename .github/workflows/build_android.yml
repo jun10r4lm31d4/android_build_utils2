@@ -3,18 +3,18 @@ on:
   workflow_dispatch:
     inputs:
       ROM_NAME:
-        description: 'Coose a ROM to build:'
+        description: "Coose a ROM to build:"
         required: true
-        default: 'LineageOS'
+        default: "LineageOS"
         type: choice
         options:
-          - 'LineageOS'
-          - 'EvolutionX'
-          - 'Matrixx'
-          - 'PixelOS'
-          - 'RisingOS'
+          - "LineageOS"
+          - "EvolutionX"
+          - "Matrixx"
+          - "PixelOS"
+          - "RisingOS"
       REMOVALS:
-        description: 'Folders to be removed before syncing:'
+        description: "Folders to be removed before syncing:"
         required: false
       DEVICE_NAME:
         description: "Device's codename:"
@@ -22,111 +22,111 @@ on:
         default: "eqe"
         type: choice
         options:
-          - 'eqe'
+          - "eqe"
       BUILD_TYPE:
-        description: 'Type of build:'
+        description: "Type of build:"
         required: true
-        default: 'userdebug'
+        default: "userdebug"
         type: choice
-        options: 
-        - 'eng'
-        - 'userdebug'
-        - 'user'
+        options:
+          - "eng"
+          - "userdebug"
+          - "user"
       CLEAN_BUILD:
-        description: 'Build with a clean workspace?'
+        description: "Build with a clean workspace?"
         required: true
-        default: 'no'
+        default: "no"
         type: choice
-        options: 
-        - 'yes'
-        - 'no'
+        options:
+          - "yes"
+          - "no"
 
 jobs:
   Start-Runner:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up environment
-      run: sudo apt update && sudo apt install -y tmux
+      - name: Set up environment
+        run: sudo apt update && sudo apt install -y tmux
 
-    - name: Configure the 'crave' environment
-      run: |
-        echo "DCDEVSPACE status: ${DCDEVSPACE}"
-        if [[ $DCDEVSPACE == *1* ]]; then
-          echo 'No need to set up crave, we are already running in devspace!'
-        else
-          curl -s https://raw.githubusercontent.com/accupara/crave/master/get_crave.sh | bash
-          sudo mv crave /usr/local/bin/crave
-          echo "$CRAVE_CONF" > ${HOME}/crave.conf
-        fi
-      env:
-        CRAVE_CONF: ${{ secrets.CRAVE_CONF }}
+      - name: Configure the 'crave' environment
+        run: |
+          echo "DCDEVSPACE status: ${DCDEVSPACE}"
+          if [[ $DCDEVSPACE == *1* ]]; then
+            echo 'No need to set up crave, we are already running in devspace!'
+          else
+            curl -s https://raw.githubusercontent.com/accupara/crave/master/get_crave.sh | bash
+            sudo mv crave /usr/local/bin/crave
+            echo "$CRAVE_CONF" > ${HOME}/crave.conf
+          fi
+        env:
+          CRAVE_CONF: ${{ secrets.CRAVE_CONF }}
 
-    - name: Run crave devspace
-      run: |
-        crave devspace -- "echo "Looking for runner..."
-        # Look for whether there's a runner folder set up
-        if [ -f actions-runner/run.sh ] ; then
-          echo "Runner found! Restarting it..."
-        else
-          echo "Error! Runner not found!"
-          exit 1
-        fi
+      - name: Run crave devspace
+        run: |
+          crave devspace -- "echo "Looking for runner..."
+          # Look for whether there's a runner folder set up
+          if [ -f actions-runner/run.sh ] ; then
+            echo "Runner found! Restarting it..."
+          else
+            echo "Error! Runner not found!"
+            exit 1
+          fi
 
-        if tmux has-session -t ghactions; then 
-          echo "Runner is already Running" 
-        else 
-          tmux kill-session -t ghactions;
-          tmux new-session -d -s ghactions 
-          tmux send-keys -t ghactions 'actions-runner/run.sh' Enter 
-          echo "Runner Started"
-        fi"
+          if tmux has-session -t ghactions; then
+            echo "Runner is already Running"
+          else
+            tmux kill-session -t ghactions;
+            tmux new-session -d -s ghactions
+            tmux send-keys -t ghactions 'actions-runner/run.sh' Enter
+            echo "Runner Started"
+          fi"
 
   prepare:
     name: Prepare for Building
     runs-on: ubuntu-latest
     steps:
-    - name: Set Project variables
-      id: proj-variables
-      run: |
-        case "${{ github.event.inputs.ROM_NAME }}" in
-          "LineageOS")
-            export PROJECTFOLDER="/crave-devspaces/LineageOS"
-            export PROJECTID="93"
-            export REPO_URL="https://github.com/LineageOS/android.git"
-            export REPO_BRANCH="lineage-22.2"
-          ;;
-          "EvolutionX")
-            export PROJECTFOLDER="/crave-devspaces/EvolutionX"
-            export PROJECTID="93"
-            export REPO_URL="https://github.com/Evolution-X/manifest.git"
-            export REPO_BRANCH="vic"
-          ;;
-          "Matrixx")
-            export PROJECTFOLDER="/crave-devspaces/Matrixx"
-            export PROJECTID="93"
-            export REPO_URL="https://github.com/ProjectMatrixx/android.git"
-            export REPO_BRANCH="15.0"
-          ;;
-          "PixelOS")
-            export PROJECTFOLDER="/crave-devspaces/PixelOS"
-            export PROJECTID="93"
-            export REPO_URL="https://github.com/PixelOS-AOSP/manifest.git"
-            export REPO_BRANCH="fifteen"
-          ;;
-          "RisingOS")
-            export PROJECTFOLDER="/crave-devspaces/RisingOS"
-            export PROJECTID="93"
-            export REPO_URL="https://github.com/RisingOS-Revived/android.git"
-            export REPO_BRANCH="qpr2"
-          ;;
-        esac
+      - name: Set Project variables
+        id: proj-variables
+        run: |
+          case "${{ github.event.inputs.ROM_NAME }}" in
+            "LineageOS")
+              export PROJECTFOLDER="/crave-devspaces/LineageOS"
+              export PROJECTID="93"
+              export REPO_URL="https://github.com/LineageOS/android.git"
+              export REPO_BRANCH="lineage-22.2"
+            ;;
+            "EvolutionX")
+              export PROJECTFOLDER="/crave-devspaces/EvolutionX"
+              export PROJECTID="93"
+              export REPO_URL="https://github.com/Evolution-X/manifest.git"
+              export REPO_BRANCH="vic"
+            ;;
+            "Matrixx")
+              export PROJECTFOLDER="/crave-devspaces/Matrixx"
+              export PROJECTID="93"
+              export REPO_URL="https://github.com/ProjectMatrixx/android.git"
+              export REPO_BRANCH="15.0"
+            ;;
+            "PixelOS")
+              export PROJECTFOLDER="/crave-devspaces/PixelOS"
+              export PROJECTID="93"
+              export REPO_URL="https://github.com/PixelOS-AOSP/manifest.git"
+              export REPO_BRANCH="fifteen"
+            ;;
+            "RisingOS")
+              export PROJECTFOLDER="/crave-devspaces/RisingOS"
+              export PROJECTID="93"
+              export REPO_URL="https://github.com/RisingOS-Revived/android.git"
+              export REPO_BRANCH="qpr2"
+            ;;
+          esac
 
-        echo "PROJECTFOLDER=$PROJECTFOLDER" >> "$GITHUB_OUTPUT"
-        echo "PROJECTID=$PROJECTID"  >> "$GITHUB_OUTPUT"
-        echo "REPO_INIT=repo init --depth 1 --git-lfs -u $REPO_URL -b $REPO_BRANCH" >> "$GITHUB_OUTPUT"
-        echo "BUILD_COMMAND=brunch ${{ github.event.inputs.DEVICE_NAME }} ${{ github.event.inputs.BUILD_TYPE }}" >> "$GITHUB_OUTPUT"
-        echo "LOCAL_MANIFEST=https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/manifests/${{ github.event.inputs.ROM_NAME }}.xml" >> "$GITHUB_OUTPUT"
+          echo "PROJECTFOLDER=$PROJECTFOLDER" >> "$GITHUB_OUTPUT"
+          echo "PROJECTID=$PROJECTID"  >> "$GITHUB_OUTPUT"
+          echo "REPO_INIT=repo init --depth 1 --git-lfs -u $REPO_URL -b $REPO_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "BUILD_COMMAND=brunch ${{ github.event.inputs.DEVICE_NAME }} ${{ github.event.inputs.BUILD_TYPE }}" >> "$GITHUB_OUTPUT"
+          echo "LOCAL_MANIFEST=https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/manifests/${{ github.event.inputs.ROM_NAME }}.xml" >> "$GITHUB_OUTPUT"
 
     outputs:
       PROJECTFOLDER: ${{ steps.proj-variables.outputs.PROJECTFOLDER }}
@@ -143,83 +143,83 @@ jobs:
     concurrency:
       group: ${{ github.repository_owner }}
     steps:
-    - name: Set Repo Project
-      run: |
-        echo "PROJECTFOLDER=${{ needs.prepare.outputs.PROJECTFOLDER }}" >> "$GITHUB_ENV"
-        echo "PROJECTID=${{ needs.prepare.outputs.PROJECTID }}"  >> "$GITHUB_ENV"
+      - name: Set Repo Project
+        run: |
+          echo "PROJECTFOLDER=${{ needs.prepare.outputs.PROJECTFOLDER }}" >> "$GITHUB_ENV"
+          echo "PROJECTID=${{ needs.prepare.outputs.PROJECTID }}"  >> "$GITHUB_ENV"
 
-    - name: Setup Project
-      run: |
-        echo "DCDEVSPACE status: $DCDEVSPACE"
-        if [[ $DCDEVSPACE == *1* ]]; then
-          echo "We are in devspace."
-          echo $CRAVE_CONF > $HOME/crave.conf
-          crave clone create --projectID $PROJECTID $PROJECTFOLDER || echo "Crave clone create failed!"
-        else
-          echo "We are not in devspace, exiting..."
-          exit 1
-        fi
-      env:
-        CRAVE_CONF: ${{ secrets.CRAVE_CONF }}
+      - name: Setup Project
+        run: |
+          echo "DCDEVSPACE status: $DCDEVSPACE"
+          if [[ $DCDEVSPACE == *1* ]]; then
+            echo "We are in devspace."
+            echo $CRAVE_CONF > $HOME/crave.conf
+            crave clone create --projectID $PROJECTID $PROJECTFOLDER || echo "Crave clone create failed!"
+          else
+            echo "We are not in devspace, exiting..."
+            exit 1
+          fi
+        env:
+          CRAVE_CONF: ${{ secrets.CRAVE_CONF }}
 
-    - name: Setup crave.yaml
-      run: |
-        cat << EOF > $PROJECTFOLDER/.repo/manifests/crave.yaml
-        LOS 22.1:
-          ignoreClientHostname: true
-          no-patch: true
-          env:
-            GH_TOKEN: "${{ secrets.GH_TOKEN }}"
-        EOF
+      - name: Setup crave.yaml
+        run: |
+          cat << EOF > $PROJECTFOLDER/.repo/manifests/crave.yaml
+          LOS 22.1:
+            ignoreClientHostname: true
+            no-patch: true
+            env:
+              GH_TOKEN: "${{ secrets.GH_TOKEN }}"
+          EOF
 
-    - name: Set-up 'git' credential(s)
-      run: |
-        git config --global user.name "${{ github.actor }}"
-        git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
- 
-    - name: Start compilation through 'crave'
-      run: |
-        cd $PROJECTFOLDER
+      - name: Set-up 'git' credential(s)
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
 
-        echo "Build is queued! Please wait for your build to start."
-        echo "Check foss.crave.io Dashboard to see builds"
-        echo "Running build's log will show up here!"
+      - name: Start compilation through 'crave'
+        run: |
+          cd $PROJECTFOLDER
 
-        crave run --no-patch -- '# what you looking at ?
-        build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main"
+          echo "Build is queued! Please wait for your build to start."
+          echo "Check foss.crave.io Dashboard to see builds"
+          echo "Running build's log will show up here!"
 
-        rm -rf .repo/local_manifests {device,vendor,kernel,hardware}/motorola '${{ inputs.REMOVALS }}'
-        '${{ needs.prepare.outputs.REPO_INIT }}'
-        curl -fLSs --create-dirs ${build_utils}/manifests/'${{ inputs.ROM_NAME }}'.xml -o .repo/local_manifests/default.xml
-        git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys
-        /opt/crave/resync.sh
-        curl -fLSs ${build_utils}/patches/telephony.patch | -p1 --forward
+          crave run --no-patch -- '# what you looking at ?
+          build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main"
 
-        export BUILD_USERNAME=peace
-        export BUILD_HOSTNAME=crave
-        export KBUILD_BUILD_USER=peace
-        export KBUILD_BUILD_HOST=crave
-        export TZ=Asia/Kolkata
-        export TARGET_HAS_UDFPS=true
-        export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
+          rm -rf .repo/local_manifests {device,vendor,kernel,hardware}/motorola '${{ inputs.REMOVALS }}'
+          '${{ needs.prepare.outputs.REPO_INIT }}'
+          curl -fLSs --create-dirs ${build_utils}/manifests/'${{ inputs.ROM_NAME }}'.xml -o .repo/local_manifests/default.xml
+          git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys
+          /opt/crave/resync.sh
+          curl -fLSs ${build_utils}/patches/telephony.patch | -p1 --forward
 
-        source build/envsetup.sh
-        '${{ needs.prepare.outputs.BUILD_COMMAND }}'
-        '
-      timeout-minutes: 1440
+          export BUILD_USERNAME=peace
+          export BUILD_HOSTNAME=crave
+          export KBUILD_BUILD_USER=peace
+          export KBUILD_BUILD_HOST=crave
+          export TZ=Asia/Kolkata
+          export TARGET_HAS_UDFPS=true
+          export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
 
-    - name: Execute if the job is cancelled
-      if: ${{ cancelled() }}
-      run: |
-        cd $PROJECTFOLDER
-        crave stop --all
+          source build/envsetup.sh
+          '${{ needs.prepare.outputs.BUILD_COMMAND }}'
+          '
+        timeout-minutes: 1440
 
-    - name: Display error.log
-      if: ${{ failure() }}
-      id: errorlog
-      run: |
-        cd $PROJECTFOLDER
-        crave ssh -- sleep 1
-        crave pull out/error.log
-        echo "Displaying out/error.log"
-        cat out/error.log
+      - name: Execute if the job is cancelled
+        if: ${{ cancelled() }}
+        run: |
+          cd $PROJECTFOLDER
+          crave stop --all
+
+      - name: Display error.log
+        if: ${{ failure() }}
+        id: errorlog
+        run: |
+          cd $PROJECTFOLDER
+          crave ssh -- sleep 1
+          crave pull out/error.log
+          echo "Displaying out/error.log"
+          cat out/error.log
