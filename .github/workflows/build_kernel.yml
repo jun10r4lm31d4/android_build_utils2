@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-kernel:
+  Build:
     runs-on: ubuntu-latest
 
     steps:
@@ -81,7 +81,7 @@ jobs:
           sed -i '$s|$res|-EclipseKernel|g' scripts/setlocalversion
           sed -i 's| -dirty||g' scripts/setlocalversion
 
-      - name: Build
+      - name: Build Kernel
         run: |
           LTO=thin BUILD_CONFIG=sm7550/build.config.gki.aarch64 build/build.sh || exit 1
           mkdir artifacts && cd artifacts
@@ -106,11 +106,11 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
         with:
-          path: artifacts/*.zip
+          path: artifacts
 
   Release:
     runs-on: ubuntu-latest
-    needs: build-kernel
+    needs: Build
 
     steps:
       - name: Checkout Repository
