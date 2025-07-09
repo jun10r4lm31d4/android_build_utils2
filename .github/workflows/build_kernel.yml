@@ -1,6 +1,9 @@
 name: Build Kernel
 
 on:
+  push:
+    paths:
+      - ".github/workflows/build_kernel.yml"
   workflow_dispatch:
     inputs:
       release:
