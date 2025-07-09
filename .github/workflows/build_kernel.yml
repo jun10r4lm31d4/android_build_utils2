@@ -102,13 +102,6 @@ jobs:
           cp ../out/*/dist/Image .
           zip -r ../artifacts/EclipseKernel.zip .
 
-      - name: Build KSU Module
-        run: |
-          cd sm7550/susfs4ksu
-          bash build_ksu_susfs_tool.sh
-          bash build_ksu_module.sh
-          cp ksu_module_susfs.zip ../artifacts
-
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
         with:
