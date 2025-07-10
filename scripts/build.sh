@@ -62,23 +62,23 @@ remote_script="${build_utils}/scripts/resync.sh"
 
 # Initialize ROM and Device source
 case "${android}" in
-    "lineage")
+    "LineageOS")
         repo_url="https://github.com/LineageOS/android.git"
         repo_branch="lineage-22.2"
         ;;
-    "evolution")
+    "EvolutionX")
         repo_url="https://github.com/Evolution-X/manifest.git"
         repo_branch="vic"
         ;;
-    "rising")
+    "RisingOS")
         repo_url="https://github.com/RisingOS-Revived/android.git"
         repo_branch="qpr2"
         ;;
-    "matrixx")
+    "Matrixx")
         repo_url="https://github.com/ProjectMatrixx/android.git"
         repo_branch="15.0"
         ;;
-    "pixel")
+    "PixelOS")
         repo_url="https://github.com/PixelOS-AOSP/manifest.git"
         repo_branch="fifteen"
         ;;
