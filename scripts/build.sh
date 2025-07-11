@@ -124,7 +124,6 @@ patches=(
     "telephony"
     "vibrator"
     "misc_kernel"
-    "hardware"
     "temp"
 )
 

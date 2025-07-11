@@ -15,15 +15,3 @@ index 904890b..158b04b 100644
  # Protobuf
  PRODUCT_PACKAGES += \
      libprotobuf-cpp-full-3.9.1-vendorcompat \
-diff --git a/device/motorola/eqe/device.mk b/device/motorola/eqe/device.mk
-index 904890b..0f426c4 100644
---- a/device/motorola/eqe/device.mk
-+++ b/device/motorola/eqe/device.mk
-@@ -262,7 +262,6 @@ PRODUCT_PACKAGES += \
- # MotoActions
- PRODUCT_PACKAGES += \
-     MotoActions \
--    MotoCommonOverlay
- 
- # NFC
- PRODUCT_PACKAGES += \
