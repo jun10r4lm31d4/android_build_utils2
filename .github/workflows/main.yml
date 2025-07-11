@@ -15,6 +15,9 @@ jobs:
       - build_kernel
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
       - name: Download all artifacts
         uses: actions/download-artifact@main
         with:
