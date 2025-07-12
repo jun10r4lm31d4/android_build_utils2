@@ -193,7 +193,7 @@ jobs:
           curl -fLSs --create-dirs ${build_utils}/manifests/'${{ inputs.ROM_NAME }}'.xml -o .repo/local_manifests/default.xml
           git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys
           /opt/crave/resync.sh
-          curl -fLSs ${build_utils}/patches/telephony.patch | -p1 --forward
+          curl -fLSs ${build_utils}/patches/telephony.patch | patch -p1 --forward
 
           export BUILD_USERNAME=peace
           export BUILD_HOSTNAME=crave
