@@ -214,12 +214,12 @@ jobs:
         if: ${{ success() }}
         run: |
           cd $PROJECTFOLDER
-          crave pull out/target/product/${{ inputs.DEVICE_NAME }}/{*.zip,eqe.json,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../artifacts || true
+          crave pull out/target/product/${{ inputs.DEVICE_NAME }}/{*.zip,eqe.json,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../artifacts/${{ inputs.ROM_NAME }}/${{ github.run_id }} || true
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
         with:
-          path: artifacts/${{ inputs.DEVICE_NAME }}
+          path: /crave-devspaces/artifacts/${{ inputs.ROM_NAME }}/${{ github.run_id }}
 
       - name: Execute if the job is cancelled
         if: ${{ cancelled() }}
