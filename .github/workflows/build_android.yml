@@ -186,6 +186,7 @@ jobs:
           echo "Running build's log will show up here!"
 
           crave run --no-patch -- '# what you looking at ?
+          # Run ID: ${{ github.run_id }}
           build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main"
 
           rm -rf .repo/local_manifests {device,vendor,kernel,hardware}/motorola '${{ inputs.REMOVALS }}'
