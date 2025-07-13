@@ -21,7 +21,7 @@ jobs:
 
       - name: Initialize and Sync Kernel Source
         run: |
-          repo init -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15
+          repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15
           mkdir -p .repo/local_manifests && cp manifests/kernel.xml .repo/local_manifests/default.xml
           repo --trace sync -c -j$(nproc --all) --no-tags --fail-fast
 
