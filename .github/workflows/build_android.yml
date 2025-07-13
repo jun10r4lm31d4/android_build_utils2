@@ -212,7 +212,7 @@ jobs:
         if: ${{ success() }}
         run: |
           cd $PROJECTFOLDER
-          crave pull out/target/product/${{ inputs.DEVICE_NAME }}/{*.zip,eqe.json,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../artifacts
+          crave pull out/target/product/${{ inputs.DEVICE_NAME }}/{*.zip,eqe.json,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../artifacts || true
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
