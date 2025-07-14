@@ -218,6 +218,7 @@ jobs:
         run: |
           cd $PROJECTFOLDER
           crave pull out/target/product/${{ inputs.device }}/{*.zip,eqe.json,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../artifacts/${{ inputs.android }}/${{ github.run_id }} || true
+          rm ../artifacts/${{ inputs.android }}/${{ github.run_id }}/*ota* || true
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
