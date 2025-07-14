@@ -2,8 +2,8 @@ name: Build Android (Crave)
 on:
   workflow_dispatch:
     inputs:
-      ROM_NAME:
-        description: "Coose a ROM to build:"
+      android:
+        description: "Choose a ROM to build:"
         required: true
         default: "LineageOS"
         type: choice
@@ -13,33 +13,30 @@ on:
           - "Matrixx"
           - "PixelOS"
           - "RisingOS"
-      REMOVALS:
+      removals:
         description: "Folders to be removed before syncing:"
         required: false
-      DEVICE_NAME:
-        description: "Device's codename:"
+      device:
+        description: "Device:"
         required: true
         default: "eqe"
         type: choice
         options:
           - "eqe"
-      BUILD_TYPE:
+      build:
         description: "Type of build:"
         required: true
-        default: "userdebug"
+        default: "user"
         type: choice
         options:
           - "eng"
           - "userdebug"
           - "user"
-      CLEAN_BUILD:
-        description: "Build with a clean workspace?"
+      clean:
+        description: "Clean"
         required: true
-        default: "no"
-        type: choice
-        options:
-          - "yes"
-          - "no"
+        default: false
+        type: boolean
       release:
         description: "Release"
         required: true
@@ -94,7 +91,7 @@ jobs:
       - name: Set Project variables
         id: proj-variables
         run: |
-          case "${{ github.event.inputs.ROM_NAME }}" in
+          case "${{ inputs.android }}" in
             "LineageOS")
               export PROJECTFOLDER="/crave-devspaces/LineageOS"
               export PROJECTID="93"
@@ -130,8 +127,8 @@ jobs:
           echo "PROJECTFOLDER=$PROJECTFOLDER" >> "$GITHUB_OUTPUT"
           echo "PROJECTID=$PROJECTID"  >> "$GITHUB_OUTPUT"
           echo "REPO_INIT=repo init --depth 1 --git-lfs -u $REPO_URL -b $REPO_BRANCH" >> "$GITHUB_OUTPUT"
-          echo "BUILD_COMMAND=brunch ${{ github.event.inputs.DEVICE_NAME }} ${{ github.event.inputs.BUILD_TYPE }}" >> "$GITHUB_OUTPUT"
-          echo "LOCAL_MANIFEST=https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/manifests/${{ github.event.inputs.ROM_NAME }}.xml" >> "$GITHUB_OUTPUT"
+          echo "BUILD_COMMAND=brunch ${{ inputs.device }} ${{ inputs.build }}" >> "$GITHUB_OUTPUT"
+          echo "LOCAL_MANIFEST=https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/manifests/${{ inputs.android }}.xml" >> "$GITHUB_OUTPUT"
 
     outputs:
       PROJECTFOLDER: ${{ steps.proj-variables.outputs.PROJECTFOLDER }}
@@ -194,9 +191,9 @@ jobs:
           # Run ID: ${{ github.run_id }}
           build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main"
 
-          rm -rf .repo/local_manifests {device,vendor,kernel,hardware}/motorola '${{ inputs.REMOVALS }}'
+          rm -rf .repo/local_manifests {device,vendor,kernel,hardware}/motorola '${{ inputs.removals }}'
           '${{ needs.prepare.outputs.REPO_INIT }}'
-          curl -fLSs --create-dirs ${build_utils}/manifests/'${{ inputs.ROM_NAME }}'.xml -o .repo/local_manifests/default.xml
+          curl -fLSs --create-dirs ${build_utils}/manifests/'${{ inputs.android }}'.xml -o .repo/local_manifests/default.xml
           git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys
           /opt/crave/resync.sh
 
@@ -220,12 +217,12 @@ jobs:
         if: ${{ success() }}
         run: |
           cd $PROJECTFOLDER
-          crave pull out/target/product/${{ inputs.DEVICE_NAME }}/{*.zip,eqe.json,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../artifacts/${{ inputs.ROM_NAME }}/${{ github.run_id }} || true
+          crave pull out/target/product/${{ inputs.device }}/{*.zip,eqe.json,boot.img,init_boot.img,vendor_boot.img,super_empty.img,recovery.img} -d ../artifacts/${{ inputs.android }}/${{ github.run_id }} || true
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
         with:
-          path: /crave-devspaces/artifacts/${{ inputs.ROM_NAME }}/${{ github.run_id }}
+          path: /crave-devspaces/artifacts/${{ inputs.android }}/${{ github.run_id }}
 
       - name: Execute if the job is cancelled
         if: ${{ cancelled() }}
@@ -264,11 +261,11 @@ jobs:
           cat << EOF > release_notes.md
 
           Notes:
-           - Device: ${{ inputs.DEVICE_NAME }}
-           - Build Type: ${{ inputs.BUILD_TYPE }}
+           - Device: ${{ inputs.device }}
+           - Build Type: ${{ inputs.build }}
 
           Sources:
-           - [Device](https://github.com/SomeEmptyBox/android_device_motorola_eqe/tree/${{ inputs.ROM_NAME }})
+           - [Device](https://github.com/SomeEmptyBox/android_device_motorola_eqe/tree/${{ inputs.android }})
            - [Vendor](https://gitlab.com/moto-sm7550/proprietary_vendor_motorola_eqe/tree/lineage-22.2)
            - [Kernel](https://github.com/moto-sm7550-devs/android_kernel_motorola_sm7550/tree/lineage-22.1)
           EOF
@@ -276,7 +273,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ inputs.ROM_NAME }}
+          name: ${{ inputs.android }}
           tag_name: ${{ env.release }}
           body_path: release_notes.md
 
