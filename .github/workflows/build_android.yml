@@ -209,7 +209,9 @@ jobs:
           export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
 
           source build/envsetup.sh
-          '${{ needs.prepare.outputs.BUILD_COMMAND }}'
+          breakfast ${{ inputs.device }} ${{ inputs.build }}
+          mka installclean
+          brunch ${{ inputs.device }} ${{ inputs.build }}
           '
         timeout-minutes: 1440
 
