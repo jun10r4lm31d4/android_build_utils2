@@ -40,6 +40,11 @@ on:
         options:
           - "yes"
           - "no"
+      release:
+        description: "Release"
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   Start-Runner:
@@ -237,3 +242,49 @@ jobs:
           crave pull out/error.log
           echo "Displaying out/error.log"
           cat out/error.log
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: inputs.release == "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@main
+        with:
+          path: artifacts
+
+      - name: Set Release Tag and Notes
+        run: |
+          echo "release=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
+          cat << EOF > release_notes.md
+
+          Notes:
+           - Device: ${{ inputs.DEVICE_NAME }}
+           - Build Type: ${{ inputs.BUILD_TYPE }}
+
+          Sources:
+           - [Device](https://github.com/SomeEmptyBox/android_device_motorola_eqe/tree/${{ inputs.ROM_NAME }})
+           - [Vendor](https://gitlab.com/moto-sm7550/proprietary_vendor_motorola_eqe/tree/lineage-22.2)
+           - [Kernel](https://github.com/moto-sm7550-devs/android_kernel_motorola_sm7550/tree/lineage-22.1)
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ inputs.ROM_NAME }}
+          tag_name: ${{ env.release }}
+          body_path: release_notes.md
+
+      - name: Upload Release Assets
+        run: |
+          for file in $(find artifacts -type f -name "*.{zip,img}"); do
+            echo "Uploading $file..."
+            gh release upload "${{ env.release }}" "$file"
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
