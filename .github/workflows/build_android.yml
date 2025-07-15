@@ -127,15 +127,11 @@ jobs:
           echo "PROJECTFOLDER=$PROJECTFOLDER" >> "$GITHUB_OUTPUT"
           echo "PROJECTID=$PROJECTID"  >> "$GITHUB_OUTPUT"
           echo "REPO_INIT=repo init --depth 1 --git-lfs -u $REPO_URL -b $REPO_BRANCH" >> "$GITHUB_OUTPUT"
-          echo "BUILD_COMMAND=brunch ${{ inputs.device }} ${{ inputs.build }}" >> "$GITHUB_OUTPUT"
-          echo "LOCAL_MANIFEST=https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main/manifests/${{ inputs.android }}.xml" >> "$GITHUB_OUTPUT"
 
     outputs:
       PROJECTFOLDER: ${{ steps.proj-variables.outputs.PROJECTFOLDER }}
       PROJECTID: ${{ steps.proj-variables.outputs.PROJECTID }}
       REPO_INIT: ${{ steps.proj-variables.outputs.REPO_INIT }}
-      BUILD_COMMAND: ${{ steps.proj-variables.outputs.BUILD_COMMAND }}
-      LOCAL_MANIFEST: ${{ steps.proj-variables.outputs.LOCAL_MANIFEST }}
 
   build:
     timeout-minutes: 1440
@@ -187,8 +183,7 @@ jobs:
           echo "Check foss.crave.io Dashboard to see builds"
           echo "Running build's log will show up here!"
 
-          crave run --no-patch -- '# what you looking at ?
-          # Run ID: ${{ github.run_id }}
+          crave run --no-patch -- '# Run ID: ${{ github.run_id }}
           build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main"
 
           rm -rf .repo/local_manifests {device,vendor,kernel,hardware}/{motorola,private} '${{ inputs.removals }}'
@@ -200,11 +195,6 @@ jobs:
           curl -fLSs ${build_utils}/patches/telephony.patch | patch -p1 --forward
           curl -fLSs ${build_utils}/patches/kernel.patch | patch -p1 --forward
 
-          export BUILD_USERNAME=peace
-          export BUILD_HOSTNAME=crave
-          export KBUILD_BUILD_USER=peace
-          export KBUILD_BUILD_HOST=crave
-          export TZ=Asia/Kolkata
           export TARGET_HAS_UDFPS=true
           export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
 
