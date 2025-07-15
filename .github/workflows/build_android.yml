@@ -209,8 +209,6 @@ jobs:
           export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
 
           source build/envsetup.sh
-          breakfast ${{ inputs.device }} ${{ inputs.build }}
-          mka installclean
           brunch ${{ inputs.device }} ${{ inputs.build }}
           '
         timeout-minutes: 1440
@@ -226,6 +224,16 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           path: /crave-devspaces/artifacts/${{ inputs.android }}/${{ github.run_id }}
+
+      - name: Post Cleanup
+        if: ${{ always() }}
+        run: |
+          cd $PROJECTFOLDER
+          crave ssh -- '
+          source build/envsetup.sh
+          breakfast ${{ inputs.device }} ${{ inputs.build }}
+          mka installclean
+          '
 
       - name: Execute if the job is cancelled
         if: ${{ cancelled() }}
