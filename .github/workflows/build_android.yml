@@ -280,7 +280,7 @@ jobs:
 
       - name: Upload Release Assets
         run: |
-          for file in $(find artifacts -type f -name "*.{zip,img}"); do
+          for file in $(find artifacts -type f -name "*.zip" -o -name "*.img"); do
             echo "Uploading $file..."
             gh release upload "${{ env.release }}" "$file"
           done
