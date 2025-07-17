@@ -15,6 +15,7 @@ jobs:
         ksu:
           - KernelSU
           - KernelSU-Next
+          - SukiSU-Ultra
 
     steps:
       - name: Checkout
@@ -31,13 +32,15 @@ jobs:
           mkdir -p .repo/local_manifests && cp manifests/kernel.xml .repo/local_manifests/default.xml
           repo --trace sync -c -j$(nproc --all) --no-tags --fail-fast
 
-      - name: Add KernelSU
+      - name: Add ${{ matrix.ksu }}
         run: |
           cd sm7550
           if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
             curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v1.0.5
           elif [ "${{ matrix.ksu }}" == "KernelSU-Next" ]; then
             curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next-susfs-a13-5.15-dev
+          elif [ "${{ matrix.ksu }}" == "SukiSU-Ultra" ]; then
+            curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
           fi
 
       - name: Apply SUSFS Patches
@@ -95,6 +98,8 @@ jobs:
           if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
             echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n" >> sm7550/arch/arm64/configs/gki_defconfig
           elif [ "${{ matrix.ksu }}" == "KernelSU-Next" ]; then
+            echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> sm7550/arch/arm64/configs/gki_defconfig
+          elif [ "${{ matrix.ksu }}" == "SukiSU-Ultra" ]; then
             echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> sm7550/arch/arm64/configs/gki_defconfig
           fi
 
