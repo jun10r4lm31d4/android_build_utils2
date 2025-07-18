@@ -1,4 +1,4 @@
-diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+diff --git a/kernel/motorola/sm7550/include/uapi/linux/videodev2.h b/kernel/motorola/sm7550/include/uapi/linux/videodev2.h
 index 4f4b00f552e7..72e0c70f460a 100644
 --- a/kernel/motorola/sm7550/include/uapi/linux/videodev2.h
 +++ b/kernel/motorola/sm7550/include/uapi/linux/videodev2.h
@@ -11,3 +11,41 @@ index 4f4b00f552e7..72e0c70f460a 100644
  #endif
  	__u32				id;
  	__u32				reserved[8];
+diff --git a/kernel/motorola/sm7550/include/linux/sched.h b/kernel/motorola/sm7550/include/linux/sched.h
+index 059b2542a..14d1a707b 100644
+--- a/kernel/motorola/sm7550/include/linux/sched.h
++++ b/kernel/motorola/sm7550/include/linux/sched.h
+@@ -63,6 +63,7 @@ struct robust_list_head;
+ struct root_domain;
+ struct rq;
+ struct sched_attr;
++struct sched_param;
+ struct seq_file;
+ struct sighand_struct;
+ struct signal_struct;
+@@ -358,10 +359,6 @@ extern struct root_domain def_root_domain;
+ extern struct mutex sched_domains_mutex;
+ #endif
+ 
+-struct sched_param {
+-	int sched_priority;
+-};
+-
+ struct sched_info {
+ #ifdef CONFIG_SCHED_INFO
+ 	/* Cumulative counters: */
+diff --git a/kernel/motorola/sm7550/include/uapi/linux/sched/types.h b/kernel/motorola/sm7550/include/uapi/linux/sched/types.h
+index 906623856..f2c4589d4 100644
+--- a/kernel/motorola/sm7550/include/uapi/linux/sched/types.h
++++ b/kernel/motorola/sm7550/include/uapi/linux/sched/types.h
+@@ -4,6 +4,10 @@
+ 
+ #include <linux/types.h>
+ 
++struct sched_param {
++	int sched_priority;
++};
++
+ #define SCHED_ATTR_SIZE_VER0	48	/* sizeof first published struct */
+ #define SCHED_ATTR_SIZE_VER1	56	/* add: util_{min,max} */
+ 
