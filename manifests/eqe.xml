@@ -2,17 +2,16 @@
 <manifest>
 
     <!-- Remotes -->
-    <remote name="eqe-peace" fetch="https://github.com/SomeEmptyBox" />
     <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
     <remote name="eqe-gitlab" fetch="https://gitlab.com/moto-sm7550" />
     <remote name="eqe-lineage" fetch="https://github.com/LineageOS" />
 
     <!-- Device -->
     <project
-        remote="eqe-peace"
+        remote="eqe-github"
         name="android_device_motorola_eqe"
         path="device/motorola/eqe"
-        revision="lineage-22.2"
+        revision="lineage-23.0"
     />
     <project
         remote="eqe-lineage"
@@ -26,13 +25,7 @@
         remote="eqe-gitlab"
         name="proprietary_vendor_motorola_eqe"
         path="vendor/motorola/eqe"
-        revision="lineage-22.2"
-    />
-    <project
-        remote="eqe-gitlab"
-        name="proprietary_vendor_motorola_eqe-motcamera"
-        path="vendor/motorola/eqe-motcamera"
-        revision="master"
+        revision="lineage-23.0"
     />
 
     <!-- Kernel -->
@@ -40,7 +33,7 @@
         remote="eqe-github"
         name="android_kernel_motorola_sm7550"
         path="kernel/motorola/sm7550"
-        revision="lineage-22.1"
+        revision="lineage-23.0"
     />
     <project
         remote="eqe-github"
