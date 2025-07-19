@@ -17,13 +17,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        ksu:
-          - KernelSU
-          - KernelSU-Next
-          - SukiSU-Ultra
-
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -39,30 +32,21 @@ jobs:
           mkdir -p .repo/local_manifests && cp manifests/kernel.xml .repo/local_manifests/default.xml
           repo --trace sync -c -j$(nproc --all) --no-tags --fail-fast
 
-      - name: Add ${{ matrix.ksu }}
-        run: |
-          cd sm7550
-          if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
-            curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v1.0.5
-          elif [ "${{ matrix.ksu }}" == "KernelSU-Next" ]; then
-            curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next-susfs-a13-5.15-dev
-          elif [ "${{ matrix.ksu }}" == "SukiSU-Ultra" ]; then
-            curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
-          fi
-
-      - name: Apply SUSFS Patches
+      - name: Checkout SUSFS v1.5.9
         run: |
           git clone https://gitlab.com/simonpunk/susfs4ksu -b gki-android13-5.15
+          cd susfs4ksu
+          git checkout ad931027686e1029b8247dd596e40d4a51eb92c0
+
+      - name: Add KernelSU with SUSFS Patches
+        run: |
           cd sm7550
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v1.0.5
           cp ../susfs4ksu/kernel_patches/fs/* fs
           cp ../susfs4ksu/kernel_patches/include/linux/* include/linux
           patch -p1 < ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch
-          patch -p1 < ../patches/kernel/hide_stuff.patch
-
-          if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
-            cd KernelSU
-            patch -p1 < ../../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
-          fi
+          cd KernelSU
+          patch -p1 < ../../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
 
       - name: Add Configuration
         run: |
@@ -70,6 +54,7 @@ jobs:
           # KernelSU and SUSFS Config
           CONFIG_KSU=y
           CONFIG_KSU_SUSFS=y
+          CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n
           CONFIG_KSU_SUSFS_SUS_PATH=y
           CONFIG_KSU_SUSFS_SUS_MOUNT=y
           CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
@@ -83,32 +68,7 @@ jobs:
           CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
           CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
           CONFIG_KSU_SUSFS_SUS_SU=y
-
-          # tmpfs config
-          CONFIG_TMPFS_XATTR=y
-          CONFIG_TMPFS_POSIX_ACL=y
-
-          # Additional config
-          CONFIG_IP_NF_TARGET_TTL=y
-          CONFIG_IP6_NF_TARGET_HL=y
-          CONFIG_IP6_NF_MATCH_HL=y
-
-          # BBR Config
-          CONFIG_TCP_CONG_ADVANCED=y
-          CONFIG_TCP_CONG_BBR=y
-          CONFIG_NET_SCH_FQ=y
-          CONFIG_TCP_CONG_BIC=n
-          CONFIG_TCP_CONG_WESTWOOD=n
-          CONFIG_TCP_CONG_HTCP=n
           EOF
-
-          if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
-            echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n" >> sm7550/arch/arm64/configs/gki_defconfig
-          elif [ "${{ matrix.ksu }}" == "KernelSU-Next" ]; then
-            echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> sm7550/arch/arm64/configs/gki_defconfig
-          elif [ "${{ matrix.ksu }}" == "SukiSU-Ultra" ]; then
-            echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> sm7550/arch/arm64/configs/gki_defconfig
-          fi
 
           # Remove check_defconfig
           sed -i 's|check_defconfig||g' sm7550/build.config.gki
@@ -123,7 +83,7 @@ jobs:
         run: |
           LTO=thin BUILD_CONFIG=sm7550/build.config.gki.aarch64 build/build.sh || exit 1
           mkdir artifacts && cd artifacts
-          cp ../out/*/dist/boot.img EclipseKernel_${{ matrix.ksu }}.img
+          cp ../out/*/dist/boot.img EclipseKernel.img
 
       - name: Make AnyKernel Zip
         run: |
@@ -132,12 +92,12 @@ jobs:
           sed -i 's|^do\.devicecheck=.*|do.devicecheck=1|' anykernel.sh
           sed -i 's|^device\.name1=.*|device.name1=eqe|' anykernel.sh
           cp ../out/*/dist/Image .
-          zip -r ../artifacts/EclipseKernel_${{ matrix.ksu }}.zip .
+          zip -r ../artifacts/EclipseKernel.zip .
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
         with:
-          name: EclipseKernel_${{ matrix.ksu }}
+          name: EclipseKernel_${{ github.run_id }}
           path: artifacts
 
   release:
@@ -163,15 +123,11 @@ jobs:
           Eclipse Kernel for Motorola Edge 50 Pro (eqe)
 
           Features:
-          - KernelSU
-          - KernelSU-Next
-          - SukiSU-Ultra
-          - SUSFS
+          - KernelSU v1.0.5
+          - SUSFS v1.5.9
 
           Links:
-          - [KernelSU](https://github.com/tiann/KernelSU)
-          - [KernelSU-Next](https://github.com/KernelSU-Next/KernelSU-Next)
-          - [SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra)
+          - [KernelSU Manager](https://github.com/tiann/KernelSU/releases/download/v1.0.5/KernelSU_v1.0.5_12081-release.apk)
           - [SUSFS Module](https://github.com/sidex15/susfs4ksu-module)
           - [Kernel Flasher](https://github.com/fatalcoder524/KernelFlasher)
           EOF
