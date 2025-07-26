@@ -136,7 +136,7 @@ jobs:
           cd ${{ env.project }}
 
           crave run --no-patch -- '# Run ID: ${{ github.run_id }}
-          build_utils="https://raw.githubusercontent.com/SomeEmptyBox/android_build_utils/refs/heads/main"
+          build_utils="https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/main"
 
           rm -rf .repo/local_manifests {device,vendor,kernel,hardware}/{motorola,private} ${{ inputs.removals }}
           repo init --depth 1 --git-lfs -u ${{ env.manifest }} -b ${{ env.branch }}
@@ -207,8 +207,8 @@ jobs:
           -> Build Type: ${{ inputs.build }}
 
           Links:
-          -> [Source](https://github.com/SomeEmptyBox/android_build_utils/blob/main/manifests/${{ inputs.device }}.xml)
-          -> [Download](https://nightly.link/SomeEmptyBox/android_build_utils/actions/runs/${{ github.run_id }}/${{ inputs.android }}_${{ github.run_id }}.zip)
+          -> [Source](https://github.com/${{ github.repository }}/blob/main/manifests/${{ inputs.device }}.xml)
+          -> [Download](https://nightly.link/${{ github.repository }}/actions/runs/${{ github.run_id }}/${{ inputs.android }}_${{ github.run_id }}.zip)
           EOF
 
           if [[ "${{ inputs.android }}" == "LineageOS" ]]; then
