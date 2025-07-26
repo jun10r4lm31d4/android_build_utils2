@@ -207,6 +207,10 @@ jobs:
           -> [Download](https://nightly.link/SomeEmptyBox/android_build_utils/actions/runs/${{ github.run_id }}/${{ inputs.android }}_${{ github.run_id }}.zip)
           EOF
 
+          if [[ "${{ inputs.android }}" == "LineageOS" ]]; then
+            echo "-> [MindTheGapps](https://github.com/MindTheGapps/16.0.0-arm64/releases/latest)" >> release_notes.md
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
