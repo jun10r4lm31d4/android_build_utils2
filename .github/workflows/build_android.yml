@@ -219,6 +219,7 @@ jobs:
           -> Build Type: ${{ inputs.build }}
 
           Links:
+          -> [Instructions](https://github.com/${{ github.repository }}/wiki/Installation-Instructions-${{ inputs.device }})
           -> [Source](https://github.com/${{ github.repository }}/blob/main/manifests/${{ inputs.device }}.xml)
           -> [Download](https://nightly.link/${{ github.repository }}/actions/runs/${{ github.run_id }}/${{ inputs.android }}_${{ github.run_id }}.zip)
           EOF
