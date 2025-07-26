@@ -144,8 +144,20 @@ jobs:
           git clone https://${GH_TOKEN}@github.com/SomeEmptyBox/android_vendor_private_keys vendor/private/keys
           /opt/crave/resync.sh
 
-          curl -fLSs ${build_utils}/patches/telephony.patch | patch -p1 --forward
-          curl -fLSs ${build_utils}/patches/${{ inputs.android }}.patch | patch -p1 --forward
+          patches=(
+            "packages/services/Telephony:2by2-Project/packages_services_Telephony/commit/6d1276ad67ec5a023e4d65cec1e0c659cf756cef"
+            "hardware/motorola:LineageOS/android_hardware_motorola/compare/lineage-23.0...moto-sm7550-devs:android_hardware_motorola:lineage-22.2"
+            "device/motorola/eqe:moto-sm7550-devs/android_device_motorola_eqe/compare/lineage-23.0...SomeEmptyBox:android_device_motorola_eqe:${{ inputs.android }}"
+          )
+
+          for patch in "${patches[@]}"; do
+            IFS=":" read -r patch_path patch_url <<< "${patch}"
+            rm -rf ${patch_path}
+            repo sync ${patch_path}
+            cd ${patch_path}
+            curl -fLSs https://github.com/${patch_url}.patch | git am
+            cd -
+          done
 
           source build/envsetup.sh
           breakfast ${{ inputs.device }} ${{ inputs.build }}
