@@ -38,6 +38,10 @@ on:
         description: "Release"
         default: false
         type: boolean
+      upload:
+        description: "Upload Release Assets"
+        default: false
+        type: boolean
 
 jobs:
   prepare:
@@ -219,6 +223,7 @@ jobs:
           body_path: release_notes.md
 
       - name: Upload Release Assets
+        if: ${{ inputs.upload }}
         run: |
           for file in $(find artifacts -type f -name "*.zip" -o -name "*.img"); do
             echo "Uploading $file..."
