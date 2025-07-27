@@ -50,9 +50,17 @@ jobs:
             curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
           fi
 
-      - name: Apply SUSFS Patches
+      - name: Checkout SUSFS
         run: |
           git clone https://gitlab.com/simonpunk/susfs4ksu -b gki-android13-5.15
+
+          if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
+            cd susfs4ksu
+            git checkout ad931027686e1029b8247dd596e40d4a51eb92c0
+          fi
+
+      - name: Apply SUSFS Patches
+        run: |
           cd sm7550
           cp ../susfs4ksu/kernel_patches/fs/* fs
           cp ../susfs4ksu/kernel_patches/include/linux/* include/linux
