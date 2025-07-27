@@ -171,17 +171,25 @@ jobs:
           Eclipse Kernel for Motorola Edge 50 Pro (eqe)
 
           Features:
-          - KernelSU
-          - KernelSU-Next
-          - SukiSU-Ultra
-          - SUSFS
+          -> KernelSU
+          -> KernelSU-Next
+          -> SukiSU-Ultra
+          -> SUSFS
+          -> BBR Support
 
           Links:
-          - [KernelSU](https://github.com/tiann/KernelSU)
-          - [KernelSU-Next](https://github.com/KernelSU-Next/KernelSU-Next)
-          - [SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra)
-          - [SUSFS Module](https://github.com/sidex15/susfs4ksu-module)
-          - [Kernel Flasher](https://github.com/fatalcoder524/KernelFlasher)
+          -> [KernelSU](https://github.com/tiann/KernelSU)
+          -> [KernelSU-Next](https://github.com/KernelSU-Next/KernelSU-Next)
+          -> [SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra)
+          -> [Kernel Flasher](https://github.com/fatalcoder524/KernelFlasher)
+          -> [SUSFS Module](https://github.com/sidex15/susfs4ksu-module)
+          -> [TCP Optimiser Module](https://github.com/fatalcoder524/TCP_Optimiser_Module)
+
+          Notes:
+          -> KernelSU is built on stable release for KSU drivers and SUSFS
+          -> KernelSU-Next and SukiSU-Ultra are built on main branch
+          -> Flash SUSFS Module and make sure SUS SU is enabled
+          -> Flash TCP Optimiser Module and leave at default settings
           EOF
 
       - name: Create GitHub Release
