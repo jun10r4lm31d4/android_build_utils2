@@ -115,6 +115,7 @@ jobs:
           elif [ "${{ matrix.ksu }}" == "KernelSU-Next" ]; then
             echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> sm7550/arch/arm64/configs/gki_defconfig
           elif [ "${{ matrix.ksu }}" == "SukiSU-Ultra" ]; then
+            echo "CONFIG_KPM=y" >> sm7550/arch/arm64/configs/gki_defconfig
             echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> sm7550/arch/arm64/configs/gki_defconfig
           fi
 
