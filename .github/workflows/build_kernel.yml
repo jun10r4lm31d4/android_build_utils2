@@ -65,7 +65,6 @@ jobs:
           cp ../susfs4ksu/kernel_patches/fs/* fs
           cp ../susfs4ksu/kernel_patches/include/linux/* include/linux
           patch -p1 < ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch
-          patch -p1 < ../patches/kernel/hide_stuff.patch
 
           if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
             cd KernelSU
