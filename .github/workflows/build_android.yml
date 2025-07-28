@@ -85,8 +85,6 @@ jobs:
     name: Build using Crave
     runs-on: self-hosted
     needs: prepare
-    concurrency:
-      group: ${{ github.repository_owner }}
 
     steps:
       - name: Set Project variables
