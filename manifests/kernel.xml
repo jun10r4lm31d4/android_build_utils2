@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <manifest>
     <remote name="eqe-github" fetch="https://github.com/moto-sm7550-devs" />
 
@@ -6,7 +6,7 @@
         remote="eqe-github"
         name="android_kernel_motorola_sm7550"
         path="sm7550"
-        revision="lineage-22.1"
+        revision="lineage-23.0"
     />
     <project
         remote="eqe-github"
