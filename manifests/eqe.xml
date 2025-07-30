@@ -17,7 +17,7 @@
         remote="eqe-lineage"
         name="android_hardware_motorola"
         path="hardware/motorola"
-        revision="lineage-22.2"
+        revision="lineage-23.0"
     />
 
     <!-- Vendor -->
