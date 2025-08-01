@@ -5,71 +5,52 @@ on:
     paths:
       - ".github/workflows/build_kernel.yml"
   workflow_dispatch:
-    inputs:
-      release:
-        description: "Release"
-        required: true
-        default: false
-        type: boolean
+
+env:
+  ksu: "v1.0.5"
+  susfs: "v1.5.9"
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        ksu:
-          - KernelSU
-          - KernelSU-Next
-          - SukiSU-Ultra
+    outputs:
+      ksu_version: ${{ steps.get_ksu_version.outputs.ksu_version }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@main
-        with:
-          lfs: false
-
-      - name: Install Packages
-        run: sudo apt update -y && sudo apt install -y repo
 
       - name: Initialize and Sync Kernel Source
         run: |
+          sudo apt update -y && sudo apt install -y repo
           repo init --depth 1 -u https://android.googlesource.com/kernel/manifest -b common-android13-5.15
           mkdir -p .repo/local_manifests && cp manifests/kernel.xml .repo/local_manifests/default.xml
-          repo --trace sync -c -j$(nproc --all) --no-tags --fail-fast
+          repo sync -c --force-sync --optimized-fetch --no-tags --no-clone-bundle --prune -j$(nproc --all)
 
-      - name: Add ${{ matrix.ksu }}
-        run: |
-          cd sm7550
-          if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
-            curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v1.0.5
-          elif [ "${{ matrix.ksu }}" == "KernelSU-Next" ]; then
-            curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next-susfs-a13-5.15-dev
-          elif [ "${{ matrix.ksu }}" == "SukiSU-Ultra" ]; then
-            curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
-          fi
+      - name: Add KernelSU ${{ env.ksu }}
+        working-directory: sm7550
+        run: curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s ${{ env.ksu }}
 
-      - name: Checkout SUSFS
+      - name: Get KernelSU Version
+        id: get_ksu_version
+        working-directory: sm7550/KernelSU
+        run: echo "ksu_version=$(expr $(git rev-list --count HEAD) "+" 10200)" >> $GITHUB_OUTPUT
+
+      - name: Checkout SUSFS ${{ env.susfs }}
         run: |
           git clone https://gitlab.com/simonpunk/susfs4ksu -b gki-android13-5.15
-
-          if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
-            cd susfs4ksu
-            git checkout ad931027686e1029b8247dd596e40d4a51eb92c0
-          fi
+          cd susfs4ksu
+          git checkout $(git log --grep="Bump version to ${{ env.susfs }}" --format="%H" -1)
 
       - name: Apply SUSFS Patches
+        working-directory: sm7550
         run: |
-          cd sm7550
           cp ../susfs4ksu/kernel_patches/fs/* fs
           cp ../susfs4ksu/kernel_patches/include/linux/* include/linux
           patch -p1 < ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch
-
-          if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
-            cd KernelSU
-            patch -p1 < ../../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
-          fi
+          cd KernelSU
+          patch -p1 < ../../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
 
       - name: Add Configuration
         run: |
@@ -77,6 +58,7 @@ jobs:
           # KernelSU and SUSFS Config
           CONFIG_KSU=y
           CONFIG_KSU_SUSFS=y
+          CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n
           CONFIG_KSU_SUSFS_SUS_PATH=y
           CONFIG_KSU_SUSFS_SUS_MOUNT=y
           CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
@@ -109,50 +91,40 @@ jobs:
           CONFIG_TCP_CONG_HTCP=n
           EOF
 
-          if [ "${{ matrix.ksu }}" == "KernelSU" ]; then
-            echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n" >> sm7550/arch/arm64/configs/gki_defconfig
-          elif [ "${{ matrix.ksu }}" == "KernelSU-Next" ]; then
-            echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> sm7550/arch/arm64/configs/gki_defconfig
-          elif [ "${{ matrix.ksu }}" == "SukiSU-Ultra" ]; then
-            echo "CONFIG_KPM=y" >> sm7550/arch/arm64/configs/gki_defconfig
-            echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> sm7550/arch/arm64/configs/gki_defconfig
-          fi
-
           # Remove check_defconfig
           sed -i 's|check_defconfig||g' sm7550/build.config.gki
 
-      - name: Set Kernel Name
-        run: |
-          cd sm7550
-          sed -i '$s|$res|-EclipseKernel|g' scripts/setlocalversion
-          sed -i 's| -dirty||g' scripts/setlocalversion
+      - name: Remove -dirty from uname
+        working-directory: sm7550
+        run: sed -i 's| -dirty||g' scripts/setlocalversion
 
-      - name: Build Kernel
+      - name: Compile Kernel
+        run: LTO=thin BUILD_CONFIG=sm7550/build.config.gki.aarch64 build/build.sh
+
+      - name: Copy Boot Image
         run: |
-          LTO=thin BUILD_CONFIG=sm7550/build.config.gki.aarch64 build/build.sh || exit 1
           mkdir artifacts && cd artifacts
-          cp ../out/*/dist/boot.img EclipseKernel_${{ matrix.ksu }}.img
+          cp ../out/*/dist/boot.img Kernel.img
 
       - name: Make AnyKernel Zip
         run: |
           git clone https://github.com/Kernel-SU/AnyKernel3.git && cd AnyKernel3
-          sed -i 's|^kernel\.string=.*|kernel.string=Eclipse Kernel by SomeEmptyBox|' anykernel.sh
+          sed -i 's|^kernel\.string=.*|kernel.string=Kernel by SomeEmptyBox|' anykernel.sh
           sed -i 's|^do\.devicecheck=.*|do.devicecheck=1|' anykernel.sh
           sed -i 's|^device\.name1=.*|device.name1=eqe|' anykernel.sh
           cp ../out/*/dist/Image .
-          zip -r ../artifacts/EclipseKernel_${{ matrix.ksu }}.zip .
+          zip -r ../artifacts/Kernel.zip .
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
         with:
-          name: EclipseKernel_${{ matrix.ksu }}
           path: artifacts
 
   release:
     name: Release
     runs-on: ubuntu-latest
     needs: build
-    if: ${{ inputs.release }}
+    if: github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout
@@ -168,26 +140,21 @@ jobs:
           echo "release=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           cat << EOF > release_notes.md
 
-          Eclipse Kernel for Motorola Edge 50 Pro (eqe)
+          Kernel for Motorola Edge 50 Pro (eqe)
 
           Features:
-          -> KernelSU
-          -> KernelSU-Next
-          -> SukiSU-Ultra
-          -> SUSFS
+          -> KernelSU ${{ env.ksu }}
+          -> SUSFS ${{ env.susfs }}
           -> BBR Support
 
           Links:
-          -> [KernelSU](https://github.com/tiann/KernelSU)
-          -> [KernelSU-Next](https://github.com/KernelSU-Next/KernelSU-Next)
-          -> [SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra)
+          -> [KernelSU Manager](https://github.com/tiann/KernelSU/releases/download/${{ env.ksu }}/KernelSU_${{ env.ksu }}_${{ needs.build.outputs.ksu_version }}-release.apk)
           -> [Kernel Flasher](https://github.com/fatalcoder524/KernelFlasher)
           -> [SUSFS Module](https://github.com/sidex15/susfs4ksu-module)
           -> [TCP Optimiser Module](https://github.com/fatalcoder524/TCP_Optimiser_Module)
 
           Notes:
-          -> KernelSU is built on stable release for KSU drivers and SUSFS
-          -> KernelSU-Next and SukiSU-Ultra are built on main branch
+          -> Kernel is built on stable release of KernelSU and SUSFS
           -> Flash SUSFS Module and make sure SUS SU is enabled
           -> Flash TCP Optimiser Module and leave at default settings
           EOF
@@ -195,7 +162,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Eclipse Kernel
+          name: Kernel
           tag_name: ${{ env.release }}
           body_path: release_notes.md
 
