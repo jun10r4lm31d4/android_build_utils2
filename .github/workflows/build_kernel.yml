@@ -163,7 +163,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: Kernel
-          tag_name: ${{ env.release }}
+          tag_name: Kernel-${{ env.ksu }}-${{ env.susfs }}
           body_path: release_notes.md
 
       - name: Upload Release Assets
