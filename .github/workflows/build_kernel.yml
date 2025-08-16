@@ -106,9 +106,15 @@ jobs:
           mkdir artifacts && cd artifacts
           cp ../out/*/dist/boot.img Kernel.img
 
+      - name: Checkout AnyKernel
+        uses: actions/checkout@v4
+        with:
+          repository: Kernel-SU/AnyKernel3
+          path: AnyKernel
+
       - name: Make AnyKernel Zip
+        working-directory: AnyKernel
         run: |
-          git clone https://github.com/Kernel-SU/AnyKernel3.git && cd AnyKernel3
           sed -i 's|^kernel\.string=.*|kernel.string=Kernel by SomeEmptyBox|' anykernel.sh
           sed -i 's|^do\.devicecheck=.*|do.devicecheck=1|' anykernel.sh
           sed -i 's|^device\.name1=.*|device.name1=eqe|' anykernel.sh
