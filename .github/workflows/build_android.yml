@@ -11,6 +11,7 @@ on:
           - "LineageOS"
           - "EvolutionX"
           - "PixelOS"
+          - "RisingOS"
       removals:
         description: "Folders to be removed before syncing:"
         required: false
@@ -104,6 +105,10 @@ jobs:
             "PixelOS")
               manifest="https://github.com/PixelOS-AOSP/manifest.git"
               branch="fifteen"
+            ;;
+            "RisingOS")
+              manifest="https://github.com/RisingOS-Revived/android.git"
+              branch="sixteen"
             ;;
           esac
 
