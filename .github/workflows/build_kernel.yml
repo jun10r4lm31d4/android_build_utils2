@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  ksu: "v1.0.5"
+  ksu: "next"
   susfs: "v1.5.9"
 
 jobs:
@@ -28,13 +28,13 @@ jobs:
           mkdir -p .repo/local_manifests && cp manifests/kernel.xml .repo/local_manifests/default.xml
           repo sync -c --force-sync --optimized-fetch --no-tags --no-clone-bundle --prune -j$(nproc --all)
 
-      - name: Add KernelSU ${{ env.ksu }}
+      - name: Add KernelSU-Next ${{ env.ksu }}
         working-directory: sm7550
-        run: curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s ${{ env.ksu }}
+        run: curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s ${{ env.ksu }}
 
-      - name: Get KernelSU Version
+      - name: Get KernelSU-Next Version
         id: get_ksu_version
-        working-directory: sm7550/KernelSU
+        working-directory: sm7550/KernelSU-Next
         run: echo "ksu_version=$(expr $(git rev-list --count HEAD) "+" 10200)" >> $GITHUB_OUTPUT
 
       - name: Checkout SUSFS ${{ env.susfs }}
@@ -49,13 +49,13 @@ jobs:
           cp ../susfs4ksu/kernel_patches/fs/* fs
           cp ../susfs4ksu/kernel_patches/include/linux/* include/linux
           patch -p1 < ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch
-          cd KernelSU
+          cd KernelSU-Next
           patch -p1 < ../../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
 
       - name: Add Configuration
         run: |
           cat << EOF >> sm7550/arch/arm64/configs/gki_defconfig
-          # KernelSU and SUSFS Config
+          # KernelSU-Next and SUSFS Config
           CONFIG_KSU=y
           CONFIG_KSU_SUSFS=y
           CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n
@@ -149,18 +149,18 @@ jobs:
           Kernel for Motorola Edge 50 Pro (eqe)
 
           Features:
-          -> KernelSU ${{ env.ksu }}
+          -> KernelSU-Next ${{ env.ksu }}
           -> SUSFS ${{ env.susfs }}
           -> BBR Support
 
           Links:
-          -> [KernelSU Manager](https://github.com/tiann/KernelSU/releases/download/${{ env.ksu }}/KernelSU_${{ env.ksu }}_${{ needs.build.outputs.ksu_version }}-release.apk)
+          -> [KernelSU-Next Manager](https://github.com/KernelSU-Next/KernelSU-Next/releases)
           -> [Kernel Flasher](https://github.com/fatalcoder524/KernelFlasher)
           -> [SUSFS Module](https://github.com/sidex15/susfs4ksu-module)
           -> [TCP Optimiser Module](https://github.com/fatalcoder524/TCP_Optimiser_Module)
 
           Notes:
-          -> Kernel is built on stable release of KernelSU and SUSFS
+          -> Kernel is built on stable release of KernelSU-Next and SUSFS
           -> Flash SUSFS Module and make sure SUS SU is enabled
           -> Flash TCP Optimiser Module and leave at default settings
           EOF
