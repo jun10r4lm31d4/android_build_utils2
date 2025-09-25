@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  ksu: "next"
+  ksu: "main"
   susfs: "v1.5.9"
 
 jobs:
@@ -28,13 +28,13 @@ jobs:
           mkdir -p .repo/local_manifests && cp manifests/kernel.xml .repo/local_manifests/default.xml
           repo sync -c --force-sync --optimized-fetch --no-tags --no-clone-bundle --prune -j$(nproc --all)
 
-      - name: Add KernelSU-Next ${{ env.ksu }}
+      - name: Add KernelSU ${{ env.ksu }}
         working-directory: sm7550
-        run: curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s ${{ env.ksu }}
+        run: curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/refs/heads/main/kernel/setup.sh" | bash -s ${{ env.ksu }}
 
-      - name: Get KernelSU-Next Version
+      - name: Get KernelSU Version
         id: get_ksu_version
-        working-directory: sm7550/KernelSU-Next
+        working-directory: sm7550/KernelSU
         run: echo "ksu_version=$(expr $(git rev-list --count HEAD) "+" 10200)" >> $GITHUB_OUTPUT
 
       - name: Checkout SUSFS ${{ env.susfs }}
@@ -154,7 +154,7 @@ jobs:
           -> BBR Support
 
           Links:
-          -> [KernelSU-Next Manager](https://github.com/KernelSU-Next/KernelSU-Next/releases)
+          -> [KernelSU Manager](https://github.com/5ec1cff/KernelSU/actions)
           -> [Kernel Flasher](https://github.com/fatalcoder524/KernelFlasher)
           -> [SUSFS Module](https://github.com/sidex15/susfs4ksu-module)
           -> [TCP Optimiser Module](https://github.com/fatalcoder524/TCP_Optimiser_Module)
