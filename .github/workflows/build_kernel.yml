@@ -37,41 +37,11 @@ jobs:
         working-directory: sm7550/KernelSU
         run: echo "ksu_version=$(expr $(git rev-list --count HEAD) "+" 10200)" >> $GITHUB_OUTPUT
 
-      - name: Checkout SUSFS ${{ env.susfs }}
-        run: |
-          git clone https://gitlab.com/simonpunk/susfs4ksu -b gki-android13-5.15
-          cd susfs4ksu
-          git checkout $(git log --grep="Bump version to ${{ env.susfs }}" --format="%H" -1)
-
-      - name: Apply SUSFS Patches
-        working-directory: sm7550
-        run: |
-          cp ../susfs4ksu/kernel_patches/fs/* fs
-          cp ../susfs4ksu/kernel_patches/include/linux/* include/linux
-          patch -p1 < ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-android13-5.15.patch
-          cd KernelSU
-          patch -p1 < ../../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch
-
       - name: Add Configuration
         run: |
           cat << EOF >> sm7550/arch/arm64/configs/gki_defconfig
-          # KernelSU-Next and SUSFS Config
+          # KernelSU
           CONFIG_KSU=y
-          CONFIG_KSU_SUSFS=y
-          CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=n
-          CONFIG_KSU_SUSFS_SUS_PATH=y
-          CONFIG_KSU_SUSFS_SUS_MOUNT=y
-          CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
-          CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y
-          CONFIG_KSU_SUSFS_SUS_KSTAT=y
-          CONFIG_KSU_SUSFS_TRY_UMOUNT=y
-          CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y
-          CONFIG_KSU_SUSFS_SPOOF_UNAME=y
-          CONFIG_KSU_SUSFS_ENABLE_LOG=y
-          CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
-          CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
-          CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
-          CONFIG_KSU_SUSFS_SUS_SU=y
 
           # tmpfs config
           CONFIG_TMPFS_XATTR=y
